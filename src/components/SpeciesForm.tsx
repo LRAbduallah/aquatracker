@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
+import { useCreateAlgae } from '../hooks/useAlgae';
 
 const speciesSchema = z.object({
   speciesName: z.string().min(2, 'Species name must be at least 2 characters'),
@@ -27,10 +28,28 @@ export const SpeciesForm: React.FC = () => {
     resolver: zodResolver(speciesSchema),
   });
 
+  const [files, setFiles] = React.useState<FileList | null>(null);
+  const createAlgae = useCreateAlgae();
+
   const onSubmit = async (data: SpeciesFormData) => {
-    console.log('Species form submitted:', data);
-    await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
-    toast.success('Species added successfully!');
+    const formData = new FormData();
+    formData.append('scientific_name', data.speciesName);
+    formData.append('class_name', data.classification);
+    formData.append('description', data.characteristics);
+    formData.append('family', ''); // Add if available
+    formData.append('genus', ''); // Add if available
+    formData.append('species', data.speciesName);
+    formData.append('order', ''); // Add if available
+    formData.append('location_id', '1'); // You may want to map this properly
+    if (files && files.length > 0) {
+      formData.append('image', files[0]);
+    }
+    try {
+      await createAlgae.mutateAsync(formData);
+      toast.success('Species added successfully!');
+    } catch (e) {
+      toast.error('Failed to add species');
+    }
   };
 
   return (
@@ -99,6 +118,7 @@ export const SpeciesForm: React.FC = () => {
           title="Upload Images"
           description="Drag and drop images here, or click to browse"
           accept="image/*"
+          onFilesSelected={setFiles}
         />
         
         <div className="flex justify-end">

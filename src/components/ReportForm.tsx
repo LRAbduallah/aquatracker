@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
+import { useCreateAlgae } from '../hooks/useAlgae';
 
 const reportSchema = z.object({
   locationName: z.string().min(2, 'Location name must be at least 2 characters'),
@@ -31,10 +32,23 @@ export const ReportForm: React.FC = () => {
     resolver: zodResolver(reportSchema),
   });
 
+  const [files, setFiles] = React.useState<FileList | null>(null);
+  const createAlgae = useCreateAlgae();
+
   const onSubmit = async (data: ReportFormData) => {
-    console.log('Form submitted:', data);
-    await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
-    toast.success('Report submitted successfully!');
+    const formData = new FormData();
+    formData.append('scientific_name', data.locationName); // Example mapping
+    formData.append('description', `Severity: ${data.severityLevel}`);
+    formData.append('location_id', '1'); // You may want to map this properly
+    if (files && files.length > 0) {
+      formData.append('image', files[0]);
+    }
+    try {
+      await createAlgae.mutateAsync(formData);
+      toast.success('Report submitted successfully!');
+    } catch (e) {
+      toast.error('Failed to submit report');
+    }
   };
 
   const handlePinLocation = () => {
@@ -121,6 +135,7 @@ export const ReportForm: React.FC = () => {
           title="Upload Photos or Drone Footage"
           description="Drag and drop files here, or browse"
           accept="image/*,video/*"
+          onFilesSelected={setFiles}
         />
         
         <div className="flex justify-end">

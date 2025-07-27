@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { FilterBar } from './FilterBar';
+import { useLocations } from '../hooks/useLocations';
 
 export const MapView: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const { data: locations, isLoading, error } = useLocations({ search: searchQuery });
 
   return (
     <main className="min-w-60 w-full max-w-[960px] overflow-hidden flex-1 shrink basis-[0%]">
@@ -46,7 +48,19 @@ export const MapView: React.FC = () => {
           className="absolute h-full w-full object-cover inset-0"
           alt="Algae Growth Map"
         />
-        <div className="relative flex min-h-[425px] w-full flex-1 py-3" />
+        <div className="relative flex min-h-[425px] w-full flex-1 py-3">
+          {isLoading && <div>Loading locations...</div>}
+          {error && <div>Error loading locations.</div>}
+          {locations && locations.results?.features && (
+            <ul className="bg-black/60 rounded p-4">
+              {locations.results.features.map((feature: any) => (
+                <li key={feature.id}>
+                  {feature.properties.name} ({feature.geometry.coordinates.join(', ')})
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       </section>
       
       <footer className="w-full text-sm text-[rgba(158,173,184,1)] font-normal text-center pt-1 pb-3 px-4">
