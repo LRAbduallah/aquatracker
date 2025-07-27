@@ -21,12 +21,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeItem = 'Dashboard', onIt
   };
 
   return (
-    <aside className="min-w-60 overflow-hidden w-80 bg-[rgba(18,20,23,1)]">
+    <aside className="min-w-60 overflow-hidden w-80 bg-background border-r border-border">
       <nav className="flex min-h-[700px] w-full flex-col items-stretch justify-center p-4">
         <header className="w-full mb-4">
           <div className="w-full">
-            <h2 className="w-full text-base text-white font-medium">Algae Tracker</h2>
-            <p className="w-full text-sm text-[rgba(158,173,184,1)] font-normal whitespace-nowrap">v1.2</p>
+            <h2 className="w-full text-base text-foreground font-medium">Algae Tracker</h2>
+            <p className="w-full text-sm text-muted-foreground font-normal whitespace-nowrap">v1.2</p>
           </div>
         </header>
         
@@ -37,16 +37,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeItem = 'Dashboard', onIt
               onClick={() => handleItemClick(item.id)}
               className={`flex w-full items-center gap-3 mt-2 px-3 py-2 rounded-lg transition-colors ${
                 activeItem === item.id
-                  ? 'bg-[rgba(41,51,56,1)]'
-                  : 'hover:bg-[rgba(41,51,56,0.5)]'
+                  ? 'bg-secondary text-secondary-foreground'
+                  : 'hover:bg-secondary/50 text-muted-foreground hover:text-foreground'
               }`}
             >
-              <img
-                src={item.icon}
-                className="aspect-[1] object-contain w-6 flex-1"
-                alt={item.label}
-              />
-              <span className="text-sm text-white font-medium whitespace-nowrap">
+              <div className="w-6 h-6 flex items-center justify-center">
+                <div className="w-4 h-4 bg-current rounded"></div>
+              </div>
+              <span className="text-sm font-medium whitespace-nowrap">
                 {item.label}
               </span>
             </button>

@@ -22,19 +22,19 @@ export const SpeciesDetails: React.FC = () => {
 
   return (
     <main className="min-w-60 w-full max-w-[960px] overflow-hidden flex-1 shrink basis-[0%]">
-      <nav className="flex w-full gap-2 text-base text-[rgba(158,173,184,1)] font-medium flex-wrap p-4">
+      <nav className="flex w-full gap-2 text-base text-muted-foreground font-medium flex-wrap p-4">
         {breadcrumbs.map((crumb, index) => (
-          <React.Fragment key={index}>
+          <div key={index} className="flex items-center gap-2">
             {index > 0 && <span className="whitespace-nowrap">/</span>}
             <a
               href={crumb.href}
               className={`whitespace-nowrap ${
-                crumb.active ? 'text-white' : 'hover:text-white transition-colors'
+                crumb.active ? 'text-foreground' : 'hover:text-foreground transition-colors'
               }`}
             >
               {crumb.label}
             </a>
-          </React.Fragment>
+          </div>
         ))}
       </nav>
       

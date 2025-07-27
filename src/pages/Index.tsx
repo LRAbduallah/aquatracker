@@ -61,16 +61,16 @@ const Index = () => {
   }
 
   return (
-    <div className="bg-[rgba(18,20,23,1)] min-h-screen w-full overflow-hidden">
+    <div className="bg-background min-h-screen w-full overflow-hidden">
       <div className="w-full">
         {/* Demo Navigation */}
-        <div className="flex w-full items-center justify-center gap-4 p-4 border-b border-[rgba(61,74,84,1)]">
+        <div className="flex w-full items-center justify-center gap-4 p-4 border-b border-border">
           <button
             onClick={() => setCurrentView('Dashboard')}
             className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
               currentView === 'Dashboard'
-                ? 'bg-[rgba(26,148,229,1)] text-white'
-                : 'bg-[rgba(41,51,56,1)] text-[rgba(158,173,184,1)] hover:text-white'
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-secondary text-muted-foreground hover:text-foreground'
             }`}
           >
             Dashboard
@@ -79,8 +79,8 @@ const Index = () => {
             onClick={() => setCurrentView('Map')}
             className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
               currentView === 'Map'
-                ? 'bg-[rgba(26,148,229,1)] text-white'
-                : 'bg-[rgba(41,51,56,1)] text-[rgba(158,173,184,1)] hover:text-white'
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-secondary text-muted-foreground hover:text-foreground'
             }`}
           >
             Map View
@@ -89,8 +89,8 @@ const Index = () => {
             onClick={() => setCurrentView('LocationDetails')}
             className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
               currentView === 'LocationDetails'
-                ? 'bg-[rgba(26,148,229,1)] text-white'
-                : 'bg-[rgba(41,51,56,1)] text-[rgba(158,173,184,1)] hover:text-white'
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-secondary text-muted-foreground hover:text-foreground'
             }`}
           >
             Location Details
@@ -99,8 +99,8 @@ const Index = () => {
             onClick={() => setCurrentView('ReportForm')}
             className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
               currentView === 'ReportForm'
-                ? 'bg-[rgba(26,148,229,1)] text-white'
-                : 'bg-[rgba(41,51,56,1)] text-[rgba(158,173,184,1)] hover:text-white'
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-secondary text-muted-foreground hover:text-foreground'
             }`}
           >
             Report Form
@@ -109,8 +109,8 @@ const Index = () => {
             onClick={() => setCurrentView('Settings')}
             className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
               currentView === 'Settings'
-                ? 'bg-[rgba(26,148,229,1)] text-white'
-                : 'bg-[rgba(41,51,56,1)] text-[rgba(158,173,184,1)] hover:text-white'
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-secondary text-muted-foreground hover:text-foreground'
             }`}
           >
             Settings
@@ -119,8 +119,8 @@ const Index = () => {
             onClick={() => setCurrentView('SpeciesForm')}
             className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
               currentView === 'SpeciesForm'
-                ? 'bg-[rgba(26,148,229,1)] text-white'
-                : 'bg-[rgba(41,51,56,1)] text-[rgba(158,173,184,1)] hover:text-white'
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-secondary text-muted-foreground hover:text-foreground'
             }`}
           >
             Species Form
@@ -129,15 +129,15 @@ const Index = () => {
             onClick={() => setCurrentView('SpeciesDetails')}
             className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
               currentView === 'SpeciesDetails'
-                ? 'bg-[rgba(26,148,229,1)] text-white'
-                : 'bg-[rgba(41,51,56,1)] text-[rgba(158,173,184,1)] hover:text-white'
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-secondary text-muted-foreground hover:text-foreground'
             }`}
           >
             Species Details
           </button>
           <button
             onClick={() => setIsLoggedIn(false)}
-            className="px-4 py-2 rounded text-sm font-medium bg-[rgba(250,94,56,1)] text-white hover:bg-[rgba(250,94,56,0.8)] transition-colors"
+            className="px-4 py-2 rounded text-sm font-medium bg-destructive text-destructive-foreground hover:bg-destructive/80 transition-colors"
           >
             Logout
           </button>
