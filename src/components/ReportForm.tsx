@@ -1,21 +1,40 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
 import { FileUpload } from './FileUpload';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { toast } from 'sonner';
+
+const reportSchema = z.object({
+  locationName: z.string().min(2, 'Location name must be at least 2 characters'),
+  latitude: z.number().min(-90).max(90, 'Latitude must be between -90 and 90'),
+  longitude: z.number().min(-180).max(180, 'Longitude must be between -180 and 180'),
+  severityLevel: z.enum(['low', 'medium', 'high', 'critical'], {
+    required_error: 'Please select a severity level',
+  }),
+});
+
+type ReportFormData = z.infer<typeof reportSchema>;
 
 export const ReportForm: React.FC = () => {
-  const [formData, setFormData] = useState({
-    locationName: '',
-    latitude: '',
-    longitude: '',
-    severityLevel: '',
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors, isSubmitting },
+  } = useForm<ReportFormData>({
+    resolver: zodResolver(reportSchema),
   });
 
-  const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('Form submitted:', formData);
+  const onSubmit = async (data: ReportFormData) => {
+    console.log('Form submitted:', data);
+    await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
+    toast.success('Report submitted successfully!');
   };
 
   const handlePinLocation = () => {
@@ -23,86 +42,80 @@ export const ReportForm: React.FC = () => {
   };
 
   return (
-    <main className="flex min-w-60 w-full max-w-[960px] flex-col overflow-hidden items-stretch flex-1 shrink basis-[0%] py-5">
-      <header className="flex w-full gap-[12px_0px] text-[32px] text-white font-bold leading-none justify-between flex-wrap p-4">
-        <h1 className="min-w-72 min-h-10 w-[305px]">Report Algae Bloom</h1>
+    <div className="max-w-2xl mx-auto space-y-6">
+      <header>
+        <h1 className="text-3xl font-bold text-foreground">Report Algae Bloom</h1>
+        <p className="text-muted-foreground mt-2">Submit a new algae bloom observation</p>
       </header>
       
-      <form onSubmit={handleSubmit}>
-        <section className="flex w-[480px] max-w-full gap-4 text-base flex-wrap px-4 py-3">
-          <div className="min-w-40 w-full flex-1 shrink basis-[0%]">
-            <label className="w-full text-white font-medium pb-2 block">
-              Location Name
-            </label>
-            <input
-              type="text"
-              value={formData.locationName}
-              onChange={(e) => handleInputChange('locationName', e.target.value)}
-              className="bg-[rgba(41,51,56,1)] flex min-h-14 w-full items-center overflow-hidden text-[rgba(158,173,184,1)] font-normal p-4 rounded-lg border-none outline-none"
-              placeholder="Enter location name"
-              required
-            />
-          </div>
-        </section>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <div className="space-y-2">
+          <Label htmlFor="locationName">Location Name</Label>
+          <Input
+            id="locationName"
+            {...register('locationName')}
+            placeholder="Enter location name"
+            disabled={isSubmitting}
+          />
+          {errors.locationName && (
+            <p className="text-sm text-destructive">{errors.locationName.message}</p>
+          )}
+        </div>
         
-        <section className="flex gap-4 text-base flex-wrap px-4 py-3">
-          <div className="min-w-40 flex-1 shrink basis-[0%]">
-            <label className="w-full text-white font-medium whitespace-nowrap pb-2 block">
-              Latitude
-            </label>
-            <input
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="latitude">Latitude</Label>
+            <Input
+              id="latitude"
               type="number"
               step="any"
-              value={formData.latitude}
-              onChange={(e) => handleInputChange('latitude', e.target.value)}
-              className="bg-[rgba(41,51,56,1)] flex min-h-14 w-full items-center overflow-hidden text-[rgba(158,173,184,1)] font-normal p-4 rounded-lg border-none outline-none"
+              {...register('latitude', { valueAsNumber: true })}
               placeholder="Enter latitude"
-              required
+              disabled={isSubmitting}
             />
+            {errors.latitude && (
+              <p className="text-sm text-destructive">{errors.latitude.message}</p>
+            )}
           </div>
-          <div className="min-w-40 flex-1 shrink basis-[0%]">
-            <label className="w-full text-white font-medium whitespace-nowrap pb-2 block">
-              Longitude
-            </label>
-            <input
+          <div className="space-y-2">
+            <Label htmlFor="longitude">Longitude</Label>
+            <Input
+              id="longitude"
               type="number"
               step="any"
-              value={formData.longitude}
-              onChange={(e) => handleInputChange('longitude', e.target.value)}
-              className="bg-[rgba(41,51,56,1)] flex min-h-14 w-full items-center overflow-hidden text-[rgba(158,173,184,1)] font-normal p-4 rounded-lg border-none outline-none"
+              {...register('longitude', { valueAsNumber: true })}
               placeholder="Enter longitude"
-              required
+              disabled={isSubmitting}
             />
+            {errors.longitude && (
+              <p className="text-sm text-destructive">{errors.longitude.message}</p>
+            )}
           </div>
-        </section>
+        </div>
         
-        <section className="flex w-full text-sm text-white font-bold text-center px-4 py-3">
-          <button
-            type="button"
-            onClick={handlePinLocation}
-            className="bg-[rgba(41,51,56,1)] flex min-w-[84px] min-h-10 w-[168px] max-w-[480px] items-center overflow-hidden justify-center px-4 rounded-lg hover:bg-[rgba(41,51,56,0.8)] transition-colors"
-          >
+        <div className="flex justify-start">
+          <Button type="button" variant="outline">
             Pin Location on Map
-          </button>
-        </section>
+          </Button>
+        </div>
         
-        <section className="flex w-[480px] max-w-full gap-4 text-base text-white font-medium flex-wrap px-4 py-3">
-          <div className="min-w-40 w-full flex-1 shrink basis-[0%]">
-            <label className="w-full pb-2 block">Severity Level</label>
-            <select
-              value={formData.severityLevel}
-              onChange={(e) => handleInputChange('severityLevel', e.target.value)}
-              className="bg-[rgba(41,51,56,1)] flex min-h-8 w-full rounded-lg p-2 border-none outline-none text-[rgba(158,173,184,1)]"
-              required
-            >
-              <option value="">Select severity level</option>
-              <option value="low">Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
-              <option value="critical">Critical</option>
-            </select>
-          </div>
-        </section>
+        <div className="space-y-2">
+          <Label htmlFor="severityLevel">Severity Level</Label>
+          <Select onValueChange={(value) => setValue('severityLevel', value as any)}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select severity level" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="low">Low</SelectItem>
+              <SelectItem value="medium">Medium</SelectItem>
+              <SelectItem value="high">High</SelectItem>
+              <SelectItem value="critical">Critical</SelectItem>
+            </SelectContent>
+          </Select>
+          {errors.severityLevel && (
+            <p className="text-sm text-destructive">{errors.severityLevel.message}</p>
+          )}
+        </div>
         
         <FileUpload
           title="Upload Photos or Drone Footage"
@@ -110,15 +123,12 @@ export const ReportForm: React.FC = () => {
           accept="image/*,video/*"
         />
         
-        <section className="flex w-full text-sm text-white font-bold whitespace-nowrap text-center px-4 py-3">
-          <button
-            type="submit"
-            className="bg-[rgba(26,148,229,1)] flex min-w-[84px] min-h-10 w-[84px] items-center overflow-hidden justify-center max-w-[480px] px-4 rounded-lg hover:bg-[rgba(26,148,229,0.9)] transition-colors"
-          >
-            Submit
-          </button>
-        </section>
+        <div className="flex justify-end">
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? 'Submitting...' : 'Submit Report'}
+          </Button>
+        </div>
       </form>
-    </main>
+    </div>
   );
 };

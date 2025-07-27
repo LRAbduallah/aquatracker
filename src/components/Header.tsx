@@ -1,19 +1,28 @@
 import React, { useState } from 'react';
+import { UserProfileModal } from './UserProfileModal';
+import { Menu, Search, X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 interface HeaderProps {
   title?: string;
   showSearch?: boolean;
   showProfile?: boolean;
   onSearch?: (query: string) => void;
+  onLogout?: () => void;
+  onMenuToggle?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({ 
   title = "AquaTrack", 
   showSearch = true, 
   showProfile = true,
-  onSearch 
+  onSearch,
+  onLogout = () => {},
+  onMenuToggle
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,60 +31,122 @@ export const Header: React.FC<HeaderProps> = ({
     }
   };
 
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(!mobileMenuOpen);
+  };
+
   return (
-    <header className="flex w-full items-center justify-between flex-wrap px-10 py-3 border-b border-border bg-background max-md:px-5">
-      <div className="self-stretch flex min-w-60 items-center gap-8 flex-wrap my-auto">
-        <div className="self-stretch flex items-center gap-4 my-auto">
-          <div className="w-8 h-8 bg-primary rounded flex items-center justify-center">
-            <div className="w-4 h-4 bg-primary-foreground rounded-sm"></div>
-          </div>
-          <h1 className="self-stretch text-lg text-foreground font-bold whitespace-nowrap leading-none my-auto">
-            {title}
-          </h1>
-        </div>
-        
-        <nav className="self-stretch flex min-w-60 items-center gap-9 text-sm text-foreground font-medium whitespace-nowrap my-auto">
-          <a href="#dashboard" className="hover:text-primary transition-colors">Dashboard</a>
-          <a href="#reports" className="hover:text-primary transition-colors">Reports</a>
-          <a href="#alerts" className="hover:text-primary transition-colors">Alerts</a>
-          <a href="#settings" className="hover:text-primary transition-colors">Settings</a>
-        </nav>
-      </div>
-      
-      {(showSearch || showProfile) && (
-        <div className="self-stretch flex min-w-60 gap-8 flex-wrap flex-1 shrink basis-[0%] my-auto">
-          {showSearch && (
-            <form onSubmit={handleSearchSubmit} className="min-w-40 w-40 max-w-64">
-              <div className="flex w-full items-stretch flex-1 h-full rounded-lg">
-                <div className="bg-secondary flex items-center justify-center h-10 w-10 pl-4 rounded-[8px_0px_0px_8px]">
-                  <div className="w-4 h-4 text-muted-foreground">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-                    </svg>
-                  </div>
-                </div>
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="bg-secondary flex items-center overflow-hidden text-base text-muted-foreground font-normal whitespace-nowrap h-full flex-1 shrink basis-[0%] pl-2 pr-4 py-2 rounded-[0px_8px_8px_0px] border-none outline-none focus:ring-2 focus:ring-ring"
-                  placeholder="Search"
-                />
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex h-16 items-center justify-between">
+          {/* Left: Logo and Mobile Menu */}
+          <div className="flex items-center gap-4">
+            {onMenuToggle && (
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={onMenuToggle}
+                className="lg:hidden"
+              >
+                <Menu className="h-5 w-5" />
+              </Button>
+            )}
+            
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-primary rounded flex items-center justify-center">
+                <div className="w-4 h-4 bg-primary-foreground rounded-sm"></div>
               </div>
-            </form>
-          )}
-          
-          {showProfile && (
-            <div className="w-10 h-10 bg-primary rounded-full cursor-pointer hover:opacity-80 transition-opacity flex items-center justify-center">
-              <div className="w-6 h-6 text-primary-foreground">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-                </svg>
-              </div>
+              <h1 className="text-lg font-bold text-foreground hidden sm:block">
+                {title}
+              </h1>
             </div>
-          )}
+          </div>
+
+          {/* Center: Navigation (Desktop) */}
+          <nav className="hidden lg:flex items-center gap-8">
+            <a href="#dashboard" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+              Dashboard
+            </a>
+            <a href="#reports" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+              Reports
+            </a>
+            <a href="#alerts" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+              Alerts
+            </a>
+            <a href="#settings" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+              Settings
+            </a>
+          </nav>
+
+          {/* Right: Search and Profile */}
+          <div className="flex items-center gap-4">
+            {showSearch && (
+              <div className="hidden sm:block">
+                <form onSubmit={handleSearchSubmit} className="relative">
+                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search..."
+                    className="pl-9 w-64"
+                  />
+                </form>
+              </div>
+            )}
+            
+            {/* Mobile Search Toggle */}
+            {showSearch && (
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="sm:hidden"
+                onClick={toggleMobileMenu}
+              >
+                <Search className="h-5 w-5" />
+              </Button>
+            )}
+            
+            {showProfile && (
+              <UserProfileModal onLogout={onLogout} />
+            )}
+          </div>
         </div>
-      )}
+
+        {/* Mobile Navigation */}
+        {mobileMenuOpen && (
+          <div className="lg:hidden border-t border-border">
+            <div className="px-2 pt-2 pb-3 space-y-1">
+              {showSearch && (
+                <div className="px-3 py-2">
+                  <form onSubmit={handleSearchSubmit} className="relative">
+                    <Search className="absolute left-6 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Search..."
+                      className="pl-9 w-full"
+                    />
+                  </form>
+                </div>
+              )}
+              <a href="#dashboard" className="block px-3 py-2 text-base font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-colors">
+                Dashboard
+              </a>
+              <a href="#reports" className="block px-3 py-2 text-base font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-colors">
+                Reports
+              </a>
+              <a href="#alerts" className="block px-3 py-2 text-base font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-colors">
+                Alerts
+              </a>
+              <a href="#settings" className="block px-3 py-2 text-base font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-colors">
+                Settings
+              </a>
+            </div>
+          </div>
+        )}
+      </div>
     </header>
   );
 };

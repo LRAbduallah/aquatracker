@@ -1,17 +1,35 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+
+const loginSchema = z.object({
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+});
+
+type LoginFormData = z.infer<typeof loginSchema>;
 
 interface LoginFormProps {
   onLogin?: (email: string, password: string) => void;
 }
 
 export const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+  });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (data: LoginFormData) => {
     if (onLogin) {
-      onLogin(email, password);
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
+      onLogin(data.email, data.password);
     }
   };
 
@@ -35,37 +53,33 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
             <h1>Welcome back</h1>
           </div>
           
-          <form onSubmit={handleSubmit}>
-            <div className="flex w-full gap-4 text-base flex-wrap px-4 py-3">
-              <div className="min-w-40 w-full flex-1 shrink basis-[0%]">
-                <label className="w-full text-foreground font-medium whitespace-nowrap pb-2 block">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="bg-secondary flex min-h-14 w-full items-center overflow-hidden text-muted-foreground font-normal p-4 rounded-lg border border-border outline-none focus:ring-2 focus:ring-ring"
-                  placeholder="Enter your email"
-                  required
-                />
-              </div>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                {...register('email')}
+                placeholder="Enter your email"
+                disabled={isSubmitting}
+              />
+              {errors.email && (
+                <p className="text-sm text-destructive">{errors.email.message}</p>
+              )}
             </div>
             
-            <div className="flex w-full gap-4 text-base flex-wrap px-4 py-3">
-              <div className="min-w-40 w-full flex-1 shrink basis-[0%]">
-                <label className="w-full text-foreground font-medium whitespace-nowrap pb-2 block">
-                  Password
-                </label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="bg-secondary flex min-h-14 w-full items-center overflow-hidden text-muted-foreground font-normal p-4 rounded-lg border border-border outline-none focus:ring-2 focus:ring-ring"
-                  placeholder="Enter your password"
-                  required
-                />
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                {...register('password')}
+                placeholder="Enter your password"
+                disabled={isSubmitting}
+              />
+              {errors.password && (
+                <p className="text-sm text-destructive">{errors.password.message}</p>
+              )}
             </div>
             
             <div className="w-full text-sm text-muted-foreground font-normal pt-1 pb-3 px-4">
@@ -74,14 +88,9 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
               </a>
             </div>
             
-            <div className="flex w-full text-sm text-primary-foreground font-bold whitespace-nowrap text-center px-4 py-3">
-              <button
-                type="submit"
-                className="bg-primary flex min-w-[84px] min-h-10 w-full items-center overflow-hidden justify-center px-4 rounded-lg hover:bg-primary/90 transition-colors"
-              >
-                Login
-              </button>
-            </div>
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
+              {isSubmitting ? 'Signing in...' : 'Login'}
+            </Button>
             
             <div className="w-full text-sm text-muted-foreground font-normal text-center pt-1 pb-3 px-4">
               <span>Don't have an account? </span>
