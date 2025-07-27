@@ -3,6 +3,7 @@ import { UserProfileModal } from './UserProfileModal';
 import { Menu, Search, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Link } from "react-router-dom";
 
 interface HeaderProps {
   title?: string;
@@ -64,18 +65,21 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Center: Navigation (Desktop) */}
           <nav className="hidden lg:flex items-center gap-8">
-            <a href="#dashboard" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+            <Link to="/dashboard" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
               Dashboard
-            </a>
-            <a href="#reports" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+            </Link>
+            <Link to="/map" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+              Map
+            </Link>
+            <Link to="/reports" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
               Reports
-            </a>
-            <a href="#alerts" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
-              Alerts
-            </a>
-            <a href="#settings" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+            </Link>
+            <Link to="/report" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+              Report Algae
+            </Link>
+            <Link to="/settings" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
               Settings
-            </a>
+            </Link>
           </nav>
 
           {/* Right: Search and Profile */}
@@ -131,18 +135,21 @@ export const Header: React.FC<HeaderProps> = ({
                   </form>
                 </div>
               )}
-              <a href="#dashboard" className="block px-3 py-2 text-base font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-colors">
+              <Link to="/dashboard" className="block px-3 py-2 text-base font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-colors">
                 Dashboard
-              </a>
-              <a href="#reports" className="block px-3 py-2 text-base font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-colors">
+              </Link>
+              <Link to="/map" className="block px-3 py-2 text-base font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-colors">
+                Map
+              </Link>
+              <Link to="/reports" className="block px-3 py-2 text-base font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-colors">
                 Reports
-              </a>
-              <a href="#alerts" className="block px-3 py-2 text-base font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-colors">
-                Alerts
-              </a>
-              <a href="#settings" className="block px-3 py-2 text-base font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-colors">
+              </Link>
+              <Link to="/report" className="block px-3 py-2 text-base font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-colors">
+                Report Algae
+              </Link>
+              <Link to="/settings" className="block px-3 py-2 text-base font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-colors">
                 Settings
-              </a>
+              </Link>
             </div>
           </div>
         )}
