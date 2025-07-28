@@ -11,6 +11,10 @@ import { ReportForm } from "@/components/ReportForm";
 import { SettingsPage } from "@/components/SettingsPage";
 import Layout from "@/components/Layout";
 import Footer from "@/components/Footer";
+import AlgaeListPage from './pages/AlgaeListPage';
+import AlgaeFormPage from './pages/AlgaeFormPage';
+import AlgaeViewPage from './pages/AlgaeViewPage';
+import LocationsPage from './pages/LocationsPage';
 
 const queryClient = new QueryClient();
 
@@ -21,14 +25,16 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
-          {/* <Route path="/" element={<Navigate to="/dashboard" replace />} /> */}
           <Route element={<Layout />}>
-            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/" element={<Dashboard />} />
             <Route path="/map" element={<MapView />} />
-            <Route path="/reports" element={<ReportForm />} />
             <Route path="/report" element={<ReportForm />} />
             <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/algae" element={<AlgaeListPage />} />
+            <Route path="/algae/new" element={<AlgaeFormPage />} />
+            <Route path="/algae/:id/edit" element={<AlgaeFormPage />} />
+            <Route path="/algae/:id" element={<AlgaeViewPage />} />
+            <Route path="/locations" element={<LocationsPage />} />
           </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

@@ -1,0 +1,304 @@
+openapi: 3.0.0
+info:
+  title: Algae Collection API
+  description: API for managing algae collection data and locations
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8000/api
+    description: Local development server
+
+paths:
+  /locations/:
+    get:
+      summary: List all locations
+      description: Get all locations with optional filtering
+      parameters:
+        - name: in_bbox
+          in: query
+          description: Filter by bounding box (min_lon,min_lat,max_lon,max_lat)
+          schema:
+            type: string
+        - name: search
+          in: query
+          description: Search in name and description
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of locations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Location'
+
+    post:
+      summary: Create a new location
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LocationInput'
+      responses:
+        '201':
+          description: Location created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+
+  /locations/{id}/:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      summary: Get location by ID
+      responses:
+        '200':
+          description: Location details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+    put:
+      summary: Update location
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LocationInput'
+      responses:
+        '200':
+          description: Location updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+    delete:
+      summary: Delete location
+      responses:
+        '204':
+          description: Location deleted
+
+  /algae/:
+    get:
+      summary: List all algae
+      parameters:
+        - name: class_name
+          in: query
+          description: Filter by class name
+          schema:
+            type: string
+        - name: order
+          in: query
+          description: Filter by order
+          schema:
+            type: string
+        - name: family
+          in: query
+          description: Filter by family
+          schema:
+            type: string
+        - name: location
+          in: query
+          description: Filter by location ID
+          schema:
+            type: integer
+        - name: search
+          in: query
+          description: Search in scientific_name, common_name, description
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of algae
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Algae'
+
+    post:
+      summary: Create new algae
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AlgaeInput'
+      responses:
+        '201':
+          description: Algae created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Algae'
+
+  /algae/{id}/:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      summary: Get algae by ID
+      responses:
+        '200':
+          description: Algae details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Algae'
+    put:
+      summary: Update algae
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AlgaeInput'
+      responses:
+        '200':
+          description: Algae updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Algae'
+    delete:
+      summary: Delete algae
+      responses:
+        '204':
+          description: Algae deleted
+
+components:
+  schemas:
+    Location:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        coordinates:
+          type: object
+          properties:
+            type:
+              type: string
+              enum: [Point]
+            coordinates:
+              type: array
+              items:
+                type: number
+              minItems: 2
+              maxItems: 2
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    LocationInput:
+      type: object
+      required:
+        - name
+        - coordinates
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        coordinates:
+          type: object
+          properties:
+            type:
+              type: string
+              enum: [Point]
+            coordinates:
+              type: array
+              items:
+                type: number
+              minItems: 2
+              maxItems: 2
+
+    Algae:
+      type: object
+      properties:
+        id:
+          type: integer
+        scientific_name:
+          type: string
+        common_name:
+          type: string
+        class_name:
+          type: string
+        order:
+          type: string
+        family:
+          type: string
+        genus:
+          type: string
+        species:
+          type: string
+        description:
+          type: string
+        location:
+          $ref: '#/components/schemas/Location'
+        collection_date:
+          type: string
+          format: date
+        collector:
+          type: string
+        image:
+          type: string
+          format: uri
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    AlgaeInput:
+      type: object
+      required:
+        - scientific_name
+        - location_id
+      properties:
+        scientific_name:
+          type: string
+        common_name:
+          type: string
+        class_name:
+          type: string
+        order:
+          type: string
+        family:
+          type: string
+        genus:
+          type: string
+        species:
+          type: string
+        description:
+          type: string
+        location_id:
+          type: integer
+        collection_date:
+          type: string
+          format: date
+        collector:
+          type: string
+        image:
+          type: string
+          format: binary 

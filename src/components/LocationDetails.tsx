@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { Timeline } from './Timeline';
 import { ImageGallery } from './ImageGallery';
 import { SensorChart } from './SensorChart';
+import { useLocation } from '../hooks/useLocations';
 
-export const LocationDetails: React.FC = () => {
+export const LocationDetails: React.FC<{ locationId: string | number }> = ({ locationId }) => {
+  const { data: location, isLoading, error } = useLocation(locationId);
   const [activeTab, setActiveTab] = useState('Observations');
   const [notes, setNotes] = useState('');
 
@@ -42,15 +44,18 @@ export const LocationDetails: React.FC = () => {
     'https://api.builder.io/api/v1/image/assets/04a7aa9e6811400f96a0b330187abaf9/859517e221363cd6b6b11e5dc2847c4c546ec1a4?placeholderIfAbsent=true'
   ];
 
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error loading location.</div>;
+
   return (
     <main className="min-w-60 w-full max-w-[960px] overflow-hidden flex-1 shrink basis-[0%]">
       <header className="flex w-full gap-[12px_0px] justify-between flex-wrap p-4">
         <div className="min-w-72 w-72">
           <h1 className="min-h-10 w-full text-[32px] text-white font-bold leading-none">
-            Lake Serenity
+            {location?.properties?.name || 'Location'}
           </h1>
           <p className="w-full text-sm text-[rgba(158,173,184,1)] font-normal mt-3">
-            Central Region, USA
+            {location?.properties?.description || ''}
           </p>
         </div>
       </header>

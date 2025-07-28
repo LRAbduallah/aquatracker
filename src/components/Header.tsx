@@ -65,17 +65,20 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Center: Navigation (Desktop) */}
           <nav className="hidden lg:flex items-center gap-8">
-            <Link to="/dashboard" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+            <Link to="/" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
               Dashboard
             </Link>
             <Link to="/map" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
               Map
             </Link>
-            <Link to="/reports" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
-              Reports
+            <Link to="/algae" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+              Algae
+            </Link>
+            <Link to="/locations" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+              Locations
             </Link>
             <Link to="/report" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
-              Report Algae
+              Reports
             </Link>
             <Link to="/settings" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
               Settings
@@ -135,17 +138,20 @@ export const Header: React.FC<HeaderProps> = ({
                   </form>
                 </div>
               )}
-              <Link to="/dashboard" className="block px-3 py-2 text-base font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-colors">
+              <Link to="/" className="block px-3 py-2 text-base font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-colors">
                 Dashboard
               </Link>
               <Link to="/map" className="block px-3 py-2 text-base font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-colors">
                 Map
               </Link>
-              <Link to="/reports" className="block px-3 py-2 text-base font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-colors">
-                Reports
+              <Link to="/algae" className="block px-3 py-2 text-base font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-colors">
+                Algae
+              </Link>
+              <Link to="/locations" className="block px-3 py-2 text-base font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-colors">
+                Locations
               </Link>
               <Link to="/report" className="block px-3 py-2 text-base font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-colors">
-                Report Algae
+                Reports
               </Link>
               <Link to="/settings" className="block px-3 py-2 text-base font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-colors">
                 Settings

@@ -1,17 +1,20 @@
 import React from 'react';
 import { ImageGallery } from './ImageGallery';
+import { useAlgaeById } from '../hooks/useAlgae';
 
-export const SpeciesDetails: React.FC = () => {
+export const SpeciesDetails: React.FC<{ algaeId: string | number }> = ({ algaeId }) => {
+  const { data: algae, isLoading, error } = useAlgaeById(algaeId);
+
   const breadcrumbs = [
     { label: 'Species', href: '#species' },
     { label: 'Species Details', href: '#', active: true }
   ];
 
   const speciesData = {
-    name: 'Ulva Lactuca',
-    classification: 'Chlorophyta',
-    characteristics: 'Green algae with thin, flat blades',
-    habitat: 'Coastal marine environments'
+    name: algae?.scientific_name || '',
+    classification: algae?.class_name || '',
+    characteristics: algae?.description || '',
+    habitat: algae?.habitat || '',
   };
 
   const images = [
@@ -19,6 +22,9 @@ export const SpeciesDetails: React.FC = () => {
     'https://api.builder.io/api/v1/image/assets/04a7aa9e6811400f96a0b330187abaf9/bb9fb12302f9fc7751e566632a5bfc1896bdefda?placeholderIfAbsent=true',
     'https://api.builder.io/api/v1/image/assets/04a7aa9e6811400f96a0b330187abaf9/3b30b5da4859e18f756a6aadde11ed4228f676ab?placeholderIfAbsent=true'
   ];
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error loading species.</div>;
 
   return (
     <main className="min-w-60 w-full max-w-[960px] overflow-hidden flex-1 shrink basis-[0%]">
