@@ -1,18 +1,37 @@
 import React from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import { LucideIcon } from 'lucide-react';
 
 interface MetricCardProps {
   title: string;
   value: string | number;
+  icon?: LucideIcon;
+  color?: string;
   className?: string;
 }
 
-export const MetricCard: React.FC<MetricCardProps> = ({ title, value, className = '' }) => {
+export const MetricCard: React.FC<MetricCardProps> = ({ 
+  title, 
+  value, 
+  icon: Icon,
+  color = "text-primary",
+  className = '' 
+}) => {
   return (
-    <article className={`border min-w-[158px] flex-1 shrink basis-[0%] p-6 rounded-lg border-[rgba(61,74,84,1)] border-solid ${className}`}>
-      <h3 className="w-full text-base font-medium text-white">{title}</h3>
-      <p className="w-full text-2xl font-bold whitespace-nowrap leading-none mt-2 text-white">
-        {value}
-      </p>
-    </article>
+    <Card className={className}>
+      <CardContent className="p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium text-muted-foreground">{title}</p>
+            <p className="text-2xl font-bold">{value}</p>
+          </div>
+          {Icon && (
+            <div className={`p-2 rounded-lg bg-muted ${color}`}>
+              <Icon className="h-4 w-4" />
+            </div>
+          )}
+        </div>
+      </CardContent>
+    </Card>
   );
 };

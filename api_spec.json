@@ -1,0 +1,279 @@
+{
+  "info": {
+    "name": "Algae Collection API",
+    "description": "API for managing algae collection data and locations",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Locations",
+      "item": [
+        {
+          "name": "List Locations",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/locations/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "locations", ""]
+            },
+            "description": "Get all locations with optional filtering"
+          }
+        },
+        {
+          "name": "Get Location by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/locations/:id/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "locations", ":id", ""],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "Location ID"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Location",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/api/locations/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "locations", ""]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Sample Location\",\n    \"description\": \"Description of the location\",\n    \"coordinates\": {\n        \"type\": \"Point\",\n        \"coordinates\": [77.5946, 8.0883]\n    }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Update Location",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{base_url}}/api/locations/:id/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "locations", ":id", ""],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "Location ID"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Updated Location Name\",\n    \"description\": \"Updated description\",\n    \"coordinates\": {\n        \"type\": \"Point\",\n        \"coordinates\": [77.5946, 8.0883]\n    }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Delete Location",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{base_url}}/api/locations/:id/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "locations", ":id", ""],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "Location ID"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Algae",
+      "item": [
+        {
+          "name": "List Algae",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/algae/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "algae", ""],
+              "query": [
+                {
+                  "key": "class_name",
+                  "value": "Rhodophyceae",
+                  "description": "Filter by class name"
+                },
+                {
+                  "key": "order",
+                  "value": "Nemaliales",
+                  "description": "Filter by order"
+                },
+                {
+                  "key": "search",
+                  "value": "Scinaia",
+                  "description": "Search in scientific_name, common_name, description"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Algae by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/algae/:id/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "algae", ":id", ""],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "Algae ID"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Algae",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/api/algae/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "algae", ""]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "scientific_name",
+                  "value": "Scinaia furcellata",
+                  "type": "text"
+                },
+                {
+                  "key": "class_name",
+                  "value": "Rhodophyceae",
+                  "type": "text"
+                },
+                {
+                  "key": "order",
+                  "value": "Nemaliales",
+                  "type": "text"
+                },
+                {
+                  "key": "family",
+                  "value": "Sciniaceae",
+                  "type": "text"
+                },
+                {
+                  "key": "genus",
+                  "value": "Scinia",
+                  "type": "text"
+                },
+                {
+                  "key": "species",
+                  "value": "furcellata",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "Description of the algae",
+                  "type": "text"
+                },
+                {
+                  "key": "location_id",
+                  "value": "1",
+                  "type": "text"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": "/path/to/image.jpg"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Algae",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{base_url}}/api/algae/:id/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "algae", ":id", ""],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "Algae ID"
+                }
+              ]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "scientific_name",
+                  "value": "Updated Scientific Name",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "Updated description",
+                  "type": "text"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Algae",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{base_url}}/api/algae/:id/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "algae", ":id", ""],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "Algae ID"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000",
+      "type": "string"
+    }
+  ]
+} 
