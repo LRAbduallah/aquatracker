@@ -4,7 +4,7 @@ import { useLocations } from '../hooks/useLocations';
 
 export const MapView: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const { data: locations, isLoading, error } = useLocations({ search: searchQuery });
+  const { data: locations, isLoading, error } = useLocations();
 
   return (
     <main className="min-w-60 w-full max-w-[960px] overflow-hidden flex-1 shrink basis-[0%]">
@@ -51,9 +51,9 @@ export const MapView: React.FC = () => {
         <div className="relative flex min-h-[425px] w-full flex-1 py-3">
           {isLoading && <div>Loading locations...</div>}
           {error && <div>Error loading locations.</div>}
-          {locations && locations.results?.features && (
+          {locations && locations.data?.results?.features && (
             <ul className="bg-black/60 rounded p-4">
-              {locations.results.features.map((feature: any) => (
+              {locations.data.results.features.map((feature: any) => (
                 <li key={feature.id}>
                   {feature.properties.name} ({feature.geometry.coordinates.join(', ')})
                 </li>

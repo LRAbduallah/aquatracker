@@ -5,7 +5,7 @@ import { SensorChart } from './SensorChart';
 import { useLocation } from '../hooks/useLocations';
 
 export const LocationDetails: React.FC<{ locationId: string | number }> = ({ locationId }) => {
-  const { data: location, isLoading, error } = useLocation(locationId);
+  const { data: location, isLoading, error } = useLocation(Number(locationId));
   const [activeTab, setActiveTab] = useState('Observations');
   const [notes, setNotes] = useState('');
 
@@ -52,10 +52,10 @@ export const LocationDetails: React.FC<{ locationId: string | number }> = ({ loc
       <header className="flex w-full gap-[12px_0px] justify-between flex-wrap p-4">
         <div className="min-w-72 w-72">
           <h1 className="min-h-10 w-full text-[32px] text-white font-bold leading-none">
-            {location?.properties?.name || 'Location'}
+            {location?.data?.properties?.name || 'Location'}
           </h1>
           <p className="w-full text-sm text-[rgba(158,173,184,1)] font-normal mt-3">
-            {location?.properties?.description || ''}
+            {location?.data?.properties?.description || ''}
           </p>
         </div>
       </header>

@@ -31,7 +31,7 @@ const Index = () => {
       case 'Map':
         return <MapView />;
       case 'LocationDetails':
-        return <LocationDetails />;
+        return <LocationDetails locationId={1} />;
       case 'ReportForm':
         return <ReportForm />;
       case 'Settings':
@@ -39,7 +39,7 @@ const Index = () => {
       case 'SpeciesForm':
         return <SpeciesForm />;
       case 'SpeciesDetails':
-        return <SpeciesDetails />;
+        return <SpeciesDetails algaeId={1} />;
       default:
         return <Dashboard />;
     }

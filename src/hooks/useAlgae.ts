@@ -37,6 +37,14 @@ export const useAlgae = (id: number) => {
   });
 };
 
+export const useAlgaeById = (id: number) => {
+  return useQuery({
+    queryKey: ['algae', id],
+    queryFn: () => algaeService.getById(id),
+    enabled: !!id,
+  });
+};
+
 export const useCreateAlgae = () => {
   const queryClient = useQueryClient();
 

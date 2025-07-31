@@ -3,7 +3,7 @@ import { ImageGallery } from './ImageGallery';
 import { useAlgaeById } from '../hooks/useAlgae';
 
 export const SpeciesDetails: React.FC<{ algaeId: string | number }> = ({ algaeId }) => {
-  const { data: algae, isLoading, error } = useAlgaeById(algaeId);
+  const { data: algae, isLoading, error } = useAlgaeById(Number(algaeId));
 
   const breadcrumbs = [
     { label: 'Species', href: '#species' },
@@ -11,10 +11,10 @@ export const SpeciesDetails: React.FC<{ algaeId: string | number }> = ({ algaeId
   ];
 
   const speciesData = {
-    name: algae?.scientific_name || '',
-    classification: algae?.class_name || '',
-    characteristics: algae?.description || '',
-    habitat: algae?.habitat || '',
+    name: algae?.data?.scientific_name || '',
+    classification: algae?.data?.class_name || '',
+    characteristics: algae?.data?.description || '',
+    habitat: 'Coastal marine environments', // Default since no habitat field in API
   };
 
   const images = [
