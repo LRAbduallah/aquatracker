@@ -1,17 +1,38 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Algae, LocationFeature } from "@/types/api";
 import { useLocations } from "@/hooks/useLocations";
 import { useCreateAlgae, useUpdateAlgae } from "@/hooks/useAlgae";
 import { toast } from "sonner";
+import { useState } from "react";
+
+const algaeSchema = z.object({
+  scientific_name: z.string().min(2, "Scientific name must be at least 2 characters"),
+  common_name: z.string().optional(),
+  class_name: z.string().min(1, "Class is required"),
+  order: z.string().min(1, "Order is required"),
+  family: z.string().min(1, "Family is required"),
+  genus: z.string().optional(),
+  species: z.string().optional(),
+  description: z.string().optional(),
+  location_id: z.string().min(1, "Location is required"),
+  collection_date: z.string().optional(),
+  collector: z.string().optional(),
+  image: z.any().optional(),
+});
+
+type AlgaeFormData = z.infer<typeof algaeSchema>;
 
 interface AlgaeFormProps {
   initialData?: Algae;
@@ -23,10 +44,6 @@ export default function AlgaeForm({ initialData, isEdit = false }: AlgaeFormProp
   const [previewImage, setPreviewImage] = useState<string | null>(
     initialData?.image || null
   );
-  const [selectedLocationId, setSelectedLocationId] = useState<string>(
-    initialData?.location?.id?.toString() || ""
-  );
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Fetch locations from backend
   const { data: locationsResponse, isLoading: isLoadingLocations } = useLocations();
@@ -35,17 +52,38 @@ export default function AlgaeForm({ initialData, isEdit = false }: AlgaeFormProp
   const createAlgae = useCreateAlgae();
   const updateAlgae = useUpdateAlgae();
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+  const form = useForm<AlgaeFormData>({
+    resolver: zodResolver(algaeSchema),
+    defaultValues: {
+      scientific_name: initialData?.scientific_name || "",
+      common_name: initialData?.common_name || "",
+      class_name: initialData?.class_name || "",
+      order: initialData?.order || "",
+      family: initialData?.family || "",
+      genus: initialData?.genus || "",
+      species: initialData?.species || "",
+      description: initialData?.description || "",
+      location_id: initialData?.location?.id?.toString() || "",
+      collection_date: initialData?.collection_date || "",
+      collector: initialData?.collector || "",
+    },
+  });
 
+  const onSubmit = async (data: AlgaeFormData) => {
     try {
-      const form = e.currentTarget;
-      const formData = new FormData(form);
+      const formData = new FormData();
       
-      // Add location_id to form data
-      if (selectedLocationId) {
-        formData.append("location_id", selectedLocationId);
+      // Append all form fields
+      Object.entries(data).forEach(([key, value]) => {
+        if (value !== undefined && value !== "") {
+          formData.append(key, value.toString());
+        }
+      });
+
+      // Handle image file separately
+      const imageFile = form.getValues("image");
+      if (imageFile instanceof File) {
+        formData.append("image", imageFile);
       }
       
       if (isEdit && initialData) {
@@ -60,19 +98,17 @@ export default function AlgaeForm({ initialData, isEdit = false }: AlgaeFormProp
     } catch (error) {
       toast.error("Failed to save algae specimen. Please try again.");
       console.error("Error saving algae:", error);
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  const handleImageChange = (file: File | null) => {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreviewImage(reader.result as string);
       };
       reader.readAsDataURL(file);
+      form.setValue("image", file);
     }
   };
 
@@ -85,197 +121,246 @@ export default function AlgaeForm({ initialData, isEdit = false }: AlgaeFormProp
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Image Upload */}
-            <div className="space-y-2">
-              <Label htmlFor="image">Image</Label>
-              <div className="flex items-center gap-4">
-                <div className="relative h-32 w-32 overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-700 border">
-                  {previewImage ? (
-                    <img
-                      src={previewImage}
-                      alt="Preview"
-                      className="object-cover w-full h-full"
-                    />
-                  ) : (
-                    <div className="flex h-full items-center justify-center text-gray-500">
-                      No image
-                    </div>
-                  )}
-                </div>
-                <Input
-                  id="image"
-                  name="image"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  className="flex-1"
-                />
-              </div>
-            </div>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              {/* Image Upload */}
+              <FormField
+                control={form.control}
+                name="image"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Image</FormLabel>
+                    <FormControl>
+                      <div className="flex items-center gap-4">
+                        <div className="relative h-32 w-32 overflow-hidden rounded-lg bg-secondary border">
+                          {previewImage ? (
+                            <img
+                              src={previewImage}
+                              alt="Preview"
+                              className="object-cover w-full h-full"
+                            />
+                          ) : (
+                            <div className="flex h-full items-center justify-center text-muted-foreground">
+                              No image
+                            </div>
+                          )}
+                        </div>
+                        <Input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleImageChange(e.target.files?.[0] || null)}
+                          className="flex-1"
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            {/* Scientific Name */}
-            <div className="space-y-2">
-              <Label htmlFor="scientific_name">Scientific Name *</Label>
-              <Input
-                id="scientific_name"
+              {/* Scientific Name */}
+              <FormField
+                control={form.control}
                 name="scientific_name"
-                defaultValue={initialData?.scientific_name}
-                required
-                placeholder="Enter scientific name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Scientific Name *</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter scientific name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
 
-            {/* Common Name */}
-            <div className="space-y-2">
-              <Label htmlFor="common_name">Common Name</Label>
-              <Input
-                id="common_name"
+              {/* Common Name */}
+              <FormField
+                control={form.control}
                 name="common_name"
-                defaultValue={initialData?.common_name}
-                placeholder="Enter common name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Common Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter common name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
 
-            {/* Location Selection */}
-            <div className="space-y-2">
-              <Label htmlFor="location_id">Location *</Label>
-              <Select
-                value={selectedLocationId}
-                onValueChange={setSelectedLocationId}
-                disabled={isLoadingLocations}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a location" />
-                </SelectTrigger>
-                <SelectContent>
-                  {locations.map((location: LocationFeature) => (
-                    <SelectItem key={location.id} value={location.id.toString()}>
-                      {location.properties.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {isLoadingLocations && (
-                <p className="text-sm text-muted-foreground">Loading locations...</p>
-              )}
-            </div>
+              {/* Location Selection */}
+              <FormField
+                control={form.control}
+                name="location_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Location *</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isLoadingLocations}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a location" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {locations.map((location: LocationFeature) => (
+                          <SelectItem key={location.id} value={location.id.toString()}>
+                            {location.properties.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {isLoadingLocations && (
+                      <p className="text-sm text-muted-foreground">Loading locations...</p>
+                    )}
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            {/* Taxonomic Classification */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="class_name">Class *</Label>
-                <Input
-                  id="class_name"
+              {/* Taxonomic Classification */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <FormField
+                  control={form.control}
                   name="class_name"
-                  defaultValue={initialData?.class_name}
-                  required
-                  placeholder="Enter class"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Class *</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter class" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="order">Order *</Label>
-                <Input
-                  id="order"
+                <FormField
+                  control={form.control}
                   name="order"
-                  defaultValue={initialData?.order}
-                  required
-                  placeholder="Enter order"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Order *</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter order" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="family">Family *</Label>
-                <Input
-                  id="family"
+                <FormField
+                  control={form.control}
                   name="family"
-                  defaultValue={initialData?.family}
-                  required
-                  placeholder="Enter family"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Family *</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter family" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
               </div>
-            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="genus">Genus</Label>
-                <Input
-                  id="genus"
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
                   name="genus"
-                  defaultValue={initialData?.genus}
-                  placeholder="Enter genus"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Genus</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter genus" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="species">Species</Label>
-                <Input
-                  id="species"
+                <FormField
+                  control={form.control}
                   name="species"
-                  defaultValue={initialData?.species}
-                  placeholder="Enter species"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Species</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter species" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
               </div>
-            </div>
 
-            {/* Description */}
-            <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
+              {/* Description */}
+              <FormField
+                control={form.control}
                 name="description"
-                defaultValue={initialData?.description}
-                placeholder="Enter description"
-                rows={4}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder="Enter description" rows={4} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
 
-            {/* Collection Details */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="collection_date">Collection Date</Label>
-                <Input
-                  id="collection_date"
+              {/* Collection Details */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
                   name="collection_date"
-                  type="date"
-                  defaultValue={initialData?.collection_date}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Collection Date</FormLabel>
+                      <FormControl>
+                        <Input type="date" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="collector">Collector</Label>
-                <Input
-                  id="collector"
+                <FormField
+                  control={form.control}
                   name="collector"
-                  defaultValue={initialData?.collector}
-                  placeholder="Enter collector name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Collector</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter collector name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
               </div>
-            </div>
 
-            {/* Form Actions */}
-            <div className="flex justify-end gap-4 pt-6">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => navigate("/algae")}
-                disabled={isSubmitting}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                disabled={isSubmitting || createAlgae.isPending || updateAlgae.isPending}
-              >
-                {isSubmitting || createAlgae.isPending || updateAlgae.isPending
-                  ? "Saving..."
-                  : isEdit
-                  ? "Update"
-                  : "Create"}
-              </Button>
-            </div>
-          </form>
+              {/* Form Actions */}
+              <div className="flex justify-end gap-4 pt-6">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => navigate("/algae")}
+                  disabled={form.formState.isSubmitting}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={form.formState.isSubmitting || createAlgae.isPending || updateAlgae.isPending}
+                >
+                  {form.formState.isSubmitting || createAlgae.isPending || updateAlgae.isPending
+                    ? "Saving..."
+                    : isEdit
+                    ? "Update"
+                    : "Create"}
+                </Button>
+              </div>
+            </form>
+          </Form>
         </CardContent>
       </Card>
     </div>

@@ -13,8 +13,9 @@ import Layout from "@/components/Layout";
 import Footer from "@/components/Footer";
 import AlgaeListPage from './pages/AlgaeListPage';
 import AlgaeFormPage from './pages/AlgaeFormPage';
-import AlgaeViewPage from './pages/AlgaeViewPage';
+
 import LocationsPage from './pages/LocationsPage';
+import LocationFormPage from './pages/LocationFormPage';
 
 const queryClient = new QueryClient();
 
@@ -33,8 +34,9 @@ const App = () => (
             <Route path="/algae" element={<AlgaeListPage />} />
             <Route path="/algae/new" element={<AlgaeFormPage />} />
             <Route path="/algae/:id/edit" element={<AlgaeFormPage />} />
-            <Route path="/algae/:id" element={<AlgaeViewPage />} />
             <Route path="/locations" element={<LocationsPage />} />
+            <Route path="/locations/new" element={<LocationFormPage />} />
+            <Route path="/locations/:id/edit" element={<LocationFormPage />} />
           </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
