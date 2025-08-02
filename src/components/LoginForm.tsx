@@ -1,23 +1,26 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { toast } from '@/hooks/use-toast';
+import { authService } from '@/lib/authService';
 
 const loginSchema = z.object({
-  email: z.string().email('Invalid email address'),
+  username: z.string().min(1, 'Username is required'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
 interface LoginFormProps {
-  onLogin?: (email: string, password: string) => void;
+  onLogin?: (user: any) => void;
+  onSwitchToRegister?: () => void;
 }
 
-export const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
+export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onSwitchToRegister }) => {
   const {
     register,
     handleSubmit,
@@ -27,9 +30,25 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
   });
 
   const onSubmit = async (data: LoginFormData) => {
-    if (onLogin) {
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
-      onLogin(data.email, data.password);
+    try {
+      const credentials = {
+        username: data.username!,
+        password: data.password!
+      };
+      const response = await authService.login(credentials);
+      toast({
+        title: "Login successful",
+        description: "Welcome back!",
+      });
+      if (onLogin) {
+        onLogin(response.data.user);
+      }
+    } catch (error: any) {
+      toast({
+        title: "Login failed",
+        description: error.response?.data?.error || "Invalid credentials",
+        variant: "destructive",
+      });
     }
   };
 
@@ -55,16 +74,16 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
           
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="username">Username</Label>
               <Input
-                id="email"
-                type="email"
-                {...register('email')}
-                placeholder="Enter your email"
+                id="username"
+                type="text"
+                {...register('username')}
+                placeholder="Enter your username"
                 disabled={isSubmitting}
               />
-              {errors.email && (
-                <p className="text-sm text-destructive">{errors.email.message}</p>
+              {errors.username && (
+                <p className="text-sm text-destructive">{errors.username.message}</p>
               )}
             </div>
             
@@ -94,9 +113,13 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
             
             <div className="w-full text-sm text-muted-foreground font-normal text-center pt-1 pb-3 px-4">
               <span>Don't have an account? </span>
-              <a href="#" className="text-foreground hover:text-primary transition-colors">
+              <button
+                type="button"
+                onClick={onSwitchToRegister}
+                className="text-foreground hover:text-primary transition-colors underline"
+              >
                 Create Account
-              </a>
+              </button>
             </div>
           </form>
         </div>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LoginForm } from '@/components/LoginForm';
+import { AuthPage } from '@/components/AuthPage';
 import { Header } from '@/components/Header';
 import { Sidebar } from '@/components/Sidebar';
 import { Dashboard } from '@/components/Dashboard';
@@ -15,8 +15,8 @@ const Index = () => {
   const [currentView, setCurrentView] = useState('Dashboard');
   const [currentApp, setCurrentApp] = useState('algae-tracker'); // algae-tracker, aqua-track, aqua-watch
 
-  const handleLogin = (email: string, password: string) => {
-    console.log('Login attempt:', { email, password });
+  const handleLogin = (user: any) => {
+    console.log('Login successful:', user);
     setIsLoggedIn(true);
   };
 
@@ -57,7 +57,7 @@ const Index = () => {
   };
 
   if (!isLoggedIn) {
-    return <LoginForm onLogin={handleLogin} />;
+    return <AuthPage onAuth={handleLogin} />;
   }
 
   const handleLogout = () => {
