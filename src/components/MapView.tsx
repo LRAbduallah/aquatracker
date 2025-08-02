@@ -1,71 +1,84 @@
 import React, { useState } from 'react';
 import { FilterBar } from './FilterBar';
 import { useLocations } from '../hooks/useLocations';
+import InteractiveMap from './InteractiveMap';
+import { Search } from 'lucide-react';
 
 export const MapView: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const { data: locations, isLoading, error } = useLocations();
+  const { data: locationsResponse, isLoading, error } = useLocations();
+  const locations = locationsResponse?.data?.results?.features || [];
+
+  // Filter locations based on search query
+  const filteredLocations = locations.filter(location =>
+    location.properties.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    location.properties.description.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
-    <main className="min-w-60 w-full max-w-[960px] overflow-hidden flex-1 shrink basis-[0%]">
-      <section className="flex w-full gap-[12px_0px] justify-between flex-wrap p-4">
-        <div className="min-w-72 w-[498px]">
-          <h1 className="min-h-10 w-full text-[32px] text-white font-bold leading-none">
-            Algae Growth Map
-          </h1>
-          <p className="w-full text-sm text-[rgba(158,173,184,1)] font-normal mt-3">
-            Explore real-time and historical data on algae growth across different regions.
-          </p>
-        </div>
-      </section>
+    <div className="container mx-auto px-4 py-8">
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-foreground mb-2">
+          Algae Growth Map
+        </h1>
+        <p className="text-muted-foreground">
+          Explore real-time and historical data on algae growth across different regions.
+        </p>
+      </div>
       
-      <section className="flex w-full flex-col items-stretch justify-center px-4 py-3">
-        <div className="min-w-40 min-h-12 w-full">
-          <form className="flex w-full items-stretch flex-1 flex-wrap h-full rounded-lg">
-            <div className="bg-[rgba(41,51,56,1)] flex items-center justify-center h-full w-10 pl-4 rounded-[8px_0px_0px_8px]">
-              <img
-                src="https://api.builder.io/api/v1/image/assets/04a7aa9e6811400f96a0b330187abaf9/f0208529564301207cad585dab803df3ba9f4b96?placeholderIfAbsent=true"
-                className="aspect-[1] object-contain w-6 self-stretch flex-1 shrink basis-[0%] my-auto"
-                alt="Search"
-              />
-            </div>
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-[rgba(41,51,56,1)] flex min-w-60 items-center overflow-hidden text-base text-[rgba(158,173,184,1)] font-normal h-full flex-1 shrink basis-[0%] pl-2 pr-4 py-2 rounded-[0px_8px_8px_0px] border-none outline-none"
-              placeholder="Search by location or region"
-            />
-          </form>
+      {/* Search */}
+      <div className="mb-6">
+        <div className="relative max-w-md">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 bg-secondary border border-border rounded-lg text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+            placeholder="Search by location or region"
+          />
         </div>
-      </section>
+      </div>
       
       <FilterBar />
       
-      <section className="flex flex-col relative min-h-[425px] w-full flex-1">
-        <img
-          src="https://api.builder.io/api/v1/image/assets/04a7aa9e6811400f96a0b330187abaf9/28cda5258d3b04a33600e44fac4ee08e93b33498?placeholderIfAbsent=true"
-          className="absolute h-full w-full object-cover inset-0"
-          alt="Algae Growth Map"
-        />
-        <div className="relative flex min-h-[425px] w-full flex-1 py-3">
-          {isLoading && <div>Loading locations...</div>}
-          {error && <div>Error loading locations.</div>}
-          {locations && locations.data?.results?.features && (
-            <ul className="bg-black/60 rounded p-4">
-              {locations.data.results.features.map((feature: any) => (
-                <li key={feature.id}>
-                  {feature.properties.name} ({feature.geometry.coordinates.join(', ')})
-                </li>
-              ))}
-            </ul>
-          )}
+      {/* Map Section */}
+      <div className="mb-6">
+        {isLoading ? (
+          <div className="flex items-center justify-center h-[600px] bg-secondary rounded-lg">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          </div>
+        ) : error ? (
+          <div className="flex items-center justify-center h-[600px] bg-secondary rounded-lg">
+            <div className="text-center">
+              <h3 className="text-lg font-semibold text-destructive mb-2">Error</h3>
+              <p className="text-muted-foreground">Failed to load locations.</p>
+            </div>
+          </div>
+        ) : (
+          <InteractiveMap locations={filteredLocations} height="600px" />
+        )}
+      </div>
+
+      {/* Location List */}
+      {locations.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filteredLocations.map((location) => (
+            <div key={location.id} className="bg-card border border-border rounded-lg p-4">
+              <h3 className="font-semibold text-foreground mb-2">{location.properties.name}</h3>
+              <p className="text-sm text-muted-foreground mb-2">{location.properties.description}</p>
+              <p className="text-xs text-muted-foreground">
+                {location.geometry.coordinates[1].toFixed(4)}, {location.geometry.coordinates[0].toFixed(4)}
+              </p>
+            </div>
+          ))}
         </div>
-      </section>
+      )}
       
-      <footer className="w-full text-sm text-[rgba(158,173,184,1)] font-normal text-center pt-1 pb-3 px-4">
+      <footer className="text-center mt-8 text-sm text-muted-foreground">
         <p>Data updated every 24 hours</p>
       </footer>
-    </main>
+    </div>
   );
 };

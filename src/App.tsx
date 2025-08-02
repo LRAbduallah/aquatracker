@@ -3,18 +3,22 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import LoginPage from "./pages/LoginPage";
+import SignupPage from "./pages/SignupPage";
 import { Dashboard } from "@/components/Dashboard";
 import { MapView } from "@/components/MapView";
 import { ReportForm } from "@/components/ReportForm";
 import { SettingsPage } from "@/components/SettingsPage";
 import Layout from "@/components/Layout";
-import Footer from "@/components/Footer";
 import AlgaeListPage from './pages/AlgaeListPage';
 import AlgaeFormPage from './pages/AlgaeFormPage';
 import AlgaeViewPage from './pages/AlgaeViewPage';
+
 import LocationsPage from './pages/LocationsPage';
+import LocationFormPage from './pages/LocationFormPage';
+import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { PublicRoute } from "@/components/PublicRoute";
 
 const queryClient = new QueryClient();
 
@@ -25,17 +29,37 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route element={<Layout />}>
+          {/* Public Routes */}
+          <Route path="/login" element={
+            <PublicRoute>
+              <LoginPage />
+            </PublicRoute>
+          } />
+          <Route path="/signup" element={
+            <PublicRoute>
+              <SignupPage />
+            </PublicRoute>
+          } />
+          
+          {/* Protected Routes */}
+          <Route element={
+            <ProtectedRoute>
+              <Layout />
+            </ProtectedRoute>
+          }>
             <Route path="/" element={<Dashboard />} />
             <Route path="/map" element={<MapView />} />
             <Route path="/report" element={<ReportForm />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/algae" element={<AlgaeListPage />} />
             <Route path="/algae/new" element={<AlgaeFormPage />} />
-            <Route path="/algae/:id/edit" element={<AlgaeFormPage />} />
             <Route path="/algae/:id" element={<AlgaeViewPage />} />
+            <Route path="/algae/:id/edit" element={<AlgaeFormPage />} />
             <Route path="/locations" element={<LocationsPage />} />
+            <Route path="/locations/new" element={<LocationFormPage />} />
+            <Route path="/locations/:id/edit" element={<LocationFormPage />} />
           </Route>
+          
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

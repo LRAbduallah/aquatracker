@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
-import { UserProfileModal } from './UserProfileModal';
 import { Menu, Search, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Link } from "react-router-dom";
+import { UserProfileModal } from './UserProfileModal';
+import { authService } from '@/lib/authService';
+import { useNavigate } from 'react-router-dom';
 
 interface HeaderProps {
   title?: string;
   showSearch?: boolean;
   showProfile?: boolean;
   onSearch?: (query: string) => void;
-  onLogout?: () => void;
   onMenuToggle?: () => void;
 }
 
@@ -19,12 +20,21 @@ export const Header: React.FC<HeaderProps> = ({
   showSearch = true, 
   showProfile = true,
   onSearch,
-  onLogout = () => {},
   onMenuToggle
 }) => {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  const handleLogout = async () => {
+    try {
+      await authService.logout();
+      navigate('/login');
+    } catch (error) {
+      console.error('Logout error:', error);
+      navigate('/login');
+    }
+  };
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (onSearch) {
@@ -115,7 +125,7 @@ export const Header: React.FC<HeaderProps> = ({
             )}
             
             {showProfile && (
-              <UserProfileModal onLogout={onLogout} />
+              <UserProfileModal onLogout={handleLogout} />
             )}
           </div>
         </div>

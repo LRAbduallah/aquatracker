@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -15,9 +15,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { User, Settings, LogOut } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
+import { authService, type UserProfile } from '@/lib/authService';
 
 const profileSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters'),
+  first_name: z.string().min(2, 'First name must be at least 2 characters'),
+  last_name: z.string().min(2, 'Last name must be at least 2 characters'),
   email: z.string().email('Invalid email address'),
   currentPassword: z.string().optional(),
   newPassword: z.string().min(6, 'Password must be at least 6 characters').optional(),
@@ -40,30 +43,82 @@ interface UserProfileModalProps {
 
 export const UserProfileModal: React.FC<UserProfileModalProps> = ({ onLogout }) => {
   const [open, setOpen] = React.useState(false);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
+    setValue,
   } = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
-    defaultValues: {
-      name: 'John Doe',
-      email: 'john.doe@example.com',
-    },
   });
 
-  const onSubmit = async (data: ProfileFormData) => {
-    console.log('Profile updated:', data);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    setOpen(false);
+  useEffect(() => {
+    if (open && authService.isAuthenticated()) {
+      loadUserProfile();
+    }
+  }, [open]);
+
+  const loadUserProfile = async () => {
+    try {
+      const response = await authService.getProfile();
+      setUserProfile(response.data);
+      setValue('first_name', response.data.first_name);
+      setValue('last_name', response.data.last_name);
+      setValue('email', response.data.email);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to load profile",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleLogout = () => {
-    setOpen(false);
-    onLogout();
+  const onSubmit = async (data: ProfileFormData) => {
+    try {
+      // Update profile
+      await authService.updateProfile({
+        first_name: data.first_name,
+        last_name: data.last_name,
+        email: data.email,
+      });
+
+      // Change password if provided
+      if (data.currentPassword && data.newPassword) {
+        await authService.changePassword({
+          old_password: data.currentPassword,
+          new_password: data.newPassword,
+          new_password_confirm: data.confirmPassword!,
+        });
+      }
+
+      toast({
+        title: "Profile updated",
+        description: "Your profile has been updated successfully",
+      });
+      setOpen(false);
+    } catch (error: any) {
+      toast({
+        title: "Update failed",
+        description: error.response?.data?.error || "Failed to update profile",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await authService.logout();
+      setOpen(false);
+      onLogout();
+    } catch (error) {
+      console.error('Logout error:', error);
+      setOpen(false);
+      onLogout();
+    }
   };
 
   return (
@@ -86,14 +141,26 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ onLogout }) 
         
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Name</Label>
+            <Label htmlFor="first_name">First Name</Label>
             <Input
-              id="name"
-              {...register('name')}
-              placeholder="Enter your name"
+              id="first_name"
+              {...register('first_name')}
+              placeholder="Enter your first name"
             />
-            {errors.name && (
-              <p className="text-sm text-destructive">{errors.name.message}</p>
+            {errors.first_name && (
+              <p className="text-sm text-destructive">{errors.first_name.message}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="last_name">Last Name</Label>
+            <Input
+              id="last_name"
+              {...register('last_name')}
+              placeholder="Enter your last name"
+            />
+            {errors.last_name && (
+              <p className="text-sm text-destructive">{errors.last_name.message}</p>
             )}
           </div>
 

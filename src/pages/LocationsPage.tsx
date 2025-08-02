@@ -88,13 +88,6 @@ export default function LocationsPage() {
                     <Button
                       size="sm"
                       variant="ghost"
-                      onClick={() => navigate(`/locations/${location.id}`)}
-                    >
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
                       onClick={() => navigate(`/locations/${location.id}/edit`)}
                     >
                       <Edit className="h-4 w-4" />

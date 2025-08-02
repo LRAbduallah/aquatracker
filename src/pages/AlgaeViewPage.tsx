@@ -6,7 +6,7 @@ import AlgaeView from '@/components/AlgaeView';
 export default function AlgaeViewPage() {
   const { id } = useParams<{ id: string }>();
   
-  const { data: algaeData, isLoading, error } = useAlgae(parseInt(id || '0'));
+  const { data: algaeData, isLoading, error } = useAlgae(id ? parseInt(id) : 0);
   const algae = algaeData?.data;
 
   if (isLoading) {
@@ -29,4 +29,4 @@ export default function AlgaeViewPage() {
   }
 
   return <AlgaeView algae={algae} />;
-} 
+}
