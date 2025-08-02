@@ -52,17 +52,16 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex h-16 items-center justify-between">
           {/* Left: Logo and Mobile Menu */}
           <div className="flex items-center gap-4">
-            {onMenuToggle && (
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={onMenuToggle}
-                className="lg:hidden"
-              >
-                <Menu className="h-5 w-5" />
-              </Button>
-            )}
-            
+            {/* Hamburger menu for mobile only */}
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={toggleMobileMenu}
+              className="lg:hidden"
+              aria-label="Open menu"
+            >
+              <Menu className="h-5 w-5" />
+            </Button>
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 bg-primary rounded flex items-center justify-center">
                 <div className="w-4 h-4 bg-primary-foreground rounded-sm"></div>
@@ -87,12 +86,6 @@ export const Header: React.FC<HeaderProps> = ({
             <Link to="/locations" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
               Locations
             </Link>
-            <Link to="/report" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
-              Reports
-            </Link>
-            <Link to="/settings" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
-              Settings
-            </Link>
           </nav>
 
           {/* Right: Search and Profile */}
@@ -111,19 +104,6 @@ export const Header: React.FC<HeaderProps> = ({
                 </form>
               </div>
             )}
-            
-            {/* Mobile Search Toggle */}
-            {showSearch && (
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="sm:hidden"
-                onClick={toggleMobileMenu}
-              >
-                <Search className="h-5 w-5" />
-              </Button>
-            )}
-            
             {showProfile && (
               <UserProfileModal onLogout={handleLogout} />
             )}
@@ -143,7 +123,7 @@ export const Header: React.FC<HeaderProps> = ({
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       placeholder="Search..."
-                      className="pl-9 w-full"
+                      className="pl-12 w-full"
                     />
                   </form>
                 </div>
@@ -159,12 +139,6 @@ export const Header: React.FC<HeaderProps> = ({
               </Link>
               <Link to="/locations" className="block px-3 py-2 text-base font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-colors">
                 Locations
-              </Link>
-              <Link to="/report" className="block px-3 py-2 text-base font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-colors">
-                Reports
-              </Link>
-              <Link to="/settings" className="block px-3 py-2 text-base font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-colors">
-                Settings
               </Link>
             </div>
           </div>

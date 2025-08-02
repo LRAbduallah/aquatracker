@@ -48,10 +48,11 @@ export default function SignupPage() {
       toast.success("Account created successfully! Welcome to AquaTracker.");
       navigate('/');
     } catch (error: any) {
-      const errorMessage = error.response?.data?.error || 
-                          error.response?.data?.username?.[0] || 
-                          error.response?.data?.email?.[0] || 
-                          "Failed to create account. Please try again.";
+      // Prevent navigation or reload, just show toast
+      const errorMessage = error?.response?.data?.error || 
+                          error?.response?.data?.username?.[0] || 
+                          error?.response?.data?.email?.[0] || 
+                          error?.message || "Failed to create account. Please try again.";
       toast.error(errorMessage);
     }
   };
