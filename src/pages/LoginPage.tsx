@@ -37,7 +37,8 @@ export default function LoginPage() {
       toast.success("Login successful! Welcome back.");
       navigate('/');
     } catch (error: any) {
-      toast.error(error.response?.data?.error || "Invalid credentials. Please try again.");
+      // Prevent navigation or reload, just show toast
+      toast.error(error?.response?.data?.error || error?.message || "Invalid credentials. Please try again.");
     }
   };
 
