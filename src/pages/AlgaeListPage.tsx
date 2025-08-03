@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useAlgaeList, useDeleteAlgae } from '@/hooks/useAlgae';
+import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import { Algae } from '@/types/api';
 import { useNavigate } from 'react-router-dom';
 import { 
@@ -41,6 +42,10 @@ export default function AlgaeListPage() {
   const [sort, setSort] = useState<{ field: SortField; order: SortOrder }>({
     field: 'scientific_name',
     order: 'asc',
+  });
+  const [deleteDialogState, setDeleteDialogState] = useState<{ isOpen: boolean; algaeId: number | null }>({
+    isOpen: false,
+    algaeId: null,
   });
 
   const { data, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage } = 
@@ -91,14 +96,20 @@ export default function AlgaeListPage() {
     }));
   };
 
-  const handleDelete = async (id: number) => {
-    if (window.confirm("Are you sure you want to delete this algae specimen?")) {
-      try {
-        await deleteAlgae.mutateAsync(id);
-        toast.success("Algae specimen deleted successfully!");
-      } catch (error) {
-        toast.error("Failed to delete algae specimen.");
-      }
+  const handleDeleteClick = (id: number) => {
+    setDeleteDialogState({ isOpen: true, algaeId: id });
+  };
+
+  const handleDelete = async () => {
+    if (!deleteDialogState.algaeId) return;
+    
+    try {
+      await deleteAlgae.mutateAsync(deleteDialogState.algaeId);
+      toast.success("Algae specimen deleted successfully!");
+    } catch (error) {
+      toast.error("Failed to delete algae specimen.");
+    } finally {
+      setDeleteDialogState({ isOpen: false, algaeId: null });
     }
   };
 
@@ -212,7 +223,7 @@ export default function AlgaeListPage() {
                     size="sm"
                     variant="secondary"
                     className="h-8 w-8 p-0 bg-gray-800/90 hover:bg-red-900/80 text-red-400 border-gray-600 shadow-lg"
-                    onClick={() => handleDelete(algae.id)}
+                    onClick={() => handleDeleteClick(algae.id)}
                     disabled={deleteAlgae.isPending}
                   >
                     <Trash2 className="h-4 w-4" />
@@ -291,6 +302,16 @@ export default function AlgaeListPage() {
           </div>
         ) : null}
       </div>
+
+      <ConfirmationDialog
+        isOpen={deleteDialogState.isOpen}
+        onClose={() => setDeleteDialogState({ isOpen: false, algaeId: null })}
+        onConfirm={handleDelete}
+        title="Delete Algae Specimen"
+        description="Are you sure you want to delete this algae specimen? This action cannot be undone."
+        confirmLabel="Delete"
+        isLoading={deleteAlgae.isPending}
+      />
     </div>
   );
 }
