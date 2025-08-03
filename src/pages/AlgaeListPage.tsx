@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { useLocations } from '@/hooks/useLocations';
+import { FilterBar } from '@/components/FilterBar';
 import { useInView } from 'framer-motion';
 import { useRef } from 'react';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
@@ -58,6 +60,16 @@ export default function AlgaeListPage() {
     setFilters(prev => ({ ...prev, [key]: value }));
   };
 
+  // Taxonomy options extraction
+  const taxonomyOptions = {
+    classes: Array.from(new Set(allAlgae.map(a => a.class_name).filter(Boolean))),
+    orders: Array.from(new Set(allAlgae.map(a => a.order).filter(Boolean))),
+    families: Array.from(new Set(allAlgae.map(a => a.family).filter(Boolean))),
+  };
+
+  // Locations extraction
+  const { data: locationsData } = useLocations();
+  const locations = locationsData?.data?.results?.features || [];
   const handleSortChange = (field: SortField) => {
     setSort(prev => ({
       field,
@@ -91,54 +103,14 @@ export default function AlgaeListPage() {
       </div>
 
       {/* Filters */}
-      <Card className="mb-8">
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <Filter className="h-4 w-4" />
-            <h3 className="text-lg font-semibold">Filters</h3>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Search</label>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search algae..."
-                  value={filters.search}
-                  onChange={(e) => handleFilterChange('search', e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Class</label>
-              <Input
-                placeholder="Filter by class..."
-                value={filters.class_name}
-                onChange={(e) => handleFilterChange('class_name', e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Order</label>
-              <Input
-                placeholder="Filter by order..."
-                value={filters.order}
-                onChange={(e) => handleFilterChange('order', e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Family</label>
-              <Input
-                placeholder="Filter by family..."
-                value={filters.family}
-                onChange={(e) => handleFilterChange('family', e.target.value)}
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="mb-8">
+        <FilterBar
+          filters={filters}
+          onFilterChange={handleFilterChange}
+          taxonomyOptions={taxonomyOptions}
+          locations={locations}
+        />
+      </div>
 
       {/* Sort Controls */}
       <div className="mb-6 flex flex-wrap gap-2">
