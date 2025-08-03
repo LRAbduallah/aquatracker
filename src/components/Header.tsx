@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Menu, Search, X } from 'lucide-react';
+import { Menu, Search, X, Droplets, Waves, Fish, Activity } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Link } from "react-router-dom";
@@ -63,9 +63,19 @@ export const Header: React.FC<HeaderProps> = ({
               <Menu className="h-5 w-5" />
             </Button>
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-primary rounded flex items-center justify-center">
-                <div className="w-4 h-4 bg-primary-foreground rounded-sm"></div>
-              </div>
+              <img 
+                src="/favicon.png" 
+                alt="AquaTrack" 
+                className="w-8 h-8 rounded"
+                onError={(e) => {
+                  // Fallback to droplets icon if favicon fails
+                  const fallback = document.createElement('div');
+                  fallback.className = 'w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center';
+                  fallback.innerHTML = '<svg class="h-5 w-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
+                  e.currentTarget.parentNode?.replaceChild(fallback, e.currentTarget);
+                }}
+              />
+
               <h1 className="text-lg font-bold text-foreground hidden sm:block">
                 {title}
               </h1>

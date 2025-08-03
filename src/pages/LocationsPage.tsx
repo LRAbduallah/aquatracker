@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useLocations, useDeleteLocation } from '@/hooks/useLocations';
+import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import LocationsMap from '@/components/LocationsMap';
 import { LocationFeature } from '@/types/api';
 import { Plus, MapPin, Calendar, Trash2, Edit, Eye } from 'lucide-react';
@@ -14,6 +15,10 @@ export default function LocationsPage() {
   const { data: locationsResponse, isLoading } = useLocations();
   const deleteLocation = useDeleteLocation();
   const [isMounted, setIsMounted] = useState(false);
+  const [deleteDialogState, setDeleteDialogState] = useState<{ isOpen: boolean; locationId: number | null }>({
+    isOpen: false,
+    locationId: null,
+  });
 
   useEffect(() => {
     setIsMounted(true);
@@ -21,14 +26,20 @@ export default function LocationsPage() {
 
   const locations = locationsResponse?.data?.results?.features || [];
 
-  const handleDelete = async (id: number) => {
-    if (window.confirm("Are you sure you want to delete this location?")) {
-      try {
-        await deleteLocation.mutateAsync(id);
-        toast.success("Location deleted successfully!");
-      } catch (error) {
-        toast.error("Failed to delete location.");
-      }
+  const handleDeleteClick = (id: number) => {
+    setDeleteDialogState({ isOpen: true, locationId: id });
+  };
+
+  const handleDelete = async () => {
+    if (!deleteDialogState.locationId) return;
+    
+    try {
+      await deleteLocation.mutateAsync(deleteDialogState.locationId);
+      toast.success("Location deleted successfully!");
+    } catch (error) {
+      toast.error("Failed to delete location.");
+    } finally {
+      setDeleteDialogState({ isOpen: false, locationId: null });
     }
   };
 
@@ -95,7 +106,7 @@ export default function LocationsPage() {
                     <Button
                       size="sm"
                       variant="ghost"
-                      onClick={() => handleDelete(location.id)}
+                      onClick={() => handleDeleteClick(location.id)}
                       disabled={deleteLocation.isPending}
                     >
                       <Trash2 className="h-4 w-4" />
@@ -131,6 +142,16 @@ export default function LocationsPage() {
           </div>
         </div>
       </div>
+
+      <ConfirmationDialog
+        isOpen={deleteDialogState.isOpen}
+        onClose={() => setDeleteDialogState({ isOpen: false, locationId: null })}
+        onConfirm={handleDelete}
+        title="Delete Location"
+        description="Are you sure you want to delete this location? This action cannot be undone and will also remove all associated algae specimens."
+        confirmLabel="Delete"
+        isLoading={deleteLocation.isPending}
+      />
     </div>
   );
-} 
+}

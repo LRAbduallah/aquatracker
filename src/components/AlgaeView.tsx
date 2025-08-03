@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Algae } from "@/types/api";
 import { useDeleteAlgae } from "@/hooks/useAlgae";
+import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import AlgaeLocationMap from "@/components/AlgaeLocationMap";
 import { toast } from "sonner";
 import { 
@@ -29,17 +31,18 @@ interface AlgaeViewProps {
 export default function AlgaeView({ algae }: AlgaeViewProps) {
   const navigate = useNavigate();
   const deleteAlgae = useDeleteAlgae();
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const handleDelete = async () => {
-    if (window.confirm("Are you sure you want to delete this algae specimen?")) {
-      try {
-        await deleteAlgae.mutateAsync(algae.id);
-        toast.success("Algae specimen deleted successfully!");
-        navigate("/algae");
-      } catch (error) {
-        toast.error("Failed to delete algae specimen.");
-        console.error("Error deleting algae:", error);
-      }
+    try {
+      await deleteAlgae.mutateAsync(algae.id);
+      toast.success("Algae specimen deleted successfully!");
+      navigate("/algae");
+    } catch (error) {
+      toast.error("Failed to delete algae specimen.");
+      console.error("Error deleting algae:", error);
+    } finally {
+      setShowDeleteDialog(false);
     }
   };
 
@@ -73,7 +76,7 @@ export default function AlgaeView({ algae }: AlgaeViewProps) {
           </Button>
           <Button
             variant="destructive"
-            onClick={handleDelete}
+            onClick={() => setShowDeleteDialog(true)}
             disabled={deleteAlgae.isPending}
           >
             <Trash2 className="h-4 w-4 mr-2" />
@@ -225,6 +228,16 @@ export default function AlgaeView({ algae }: AlgaeViewProps) {
           </Card>
         </div>
       </div>
+
+      <ConfirmationDialog
+        isOpen={showDeleteDialog}
+        onClose={() => setShowDeleteDialog(false)}
+        onConfirm={handleDelete}
+        title="Delete Algae Specimen"
+        description="Are you sure you want to delete this algae specimen? This action cannot be undone."
+        confirmLabel="Delete"
+        isLoading={deleteAlgae.isPending}
+      />
     </div>
   );
-} 
+}
