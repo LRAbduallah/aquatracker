@@ -42,7 +42,7 @@ interface AlgaeFormProps {
 export default function AlgaeForm({ initialData, isEdit = false }: AlgaeFormProps) {
   const navigate = useNavigate();
   const [previewImage, setPreviewImage] = useState<string | null>(
-    initialData?.image || null
+    initialData?.image_url || null
   );
 
   // Fetch locations from backend
