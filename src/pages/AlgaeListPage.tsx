@@ -185,9 +185,9 @@ export default function AlgaeListPage() {
           >
             <CardHeader className="p-0 relative">
               <div className="relative w-full h-56 overflow-hidden">
-                {algae.image ? (
+                {algae.image_url ? (
                   <img
-                    src={algae.image}
+                    src={algae.image_url}
                     alt={algae.common_name || algae.scientific_name}
                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                   />

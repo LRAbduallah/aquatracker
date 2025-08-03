@@ -86,11 +86,11 @@ export default function AlgaeView({ algae }: AlgaeViewProps) {
         {/* Left Column - Image and Basic Info */}
         <div className="space-y-6">
           {/* Image */}
-          {algae.image && (
+          {algae.image_url && (
             <Card>
               <CardContent className="p-0">
                 <img
-                  src={algae.image}
+                  src={algae.image_url}
                   alt={algae.scientific_name}
                   className="w-full h-96 object-cover rounded-t-lg"
                 />

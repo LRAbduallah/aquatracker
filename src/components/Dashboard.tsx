@@ -131,9 +131,9 @@ export const Dashboard: React.FC = () => {
               {latestAlgae.map((algae) => (
                 <div key={algae.id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors">
                   <div className="flex items-center gap-3">
-                    {algae.image && (
+                    {algae.image_url && (
                       <img 
-                        src={algae.image} 
+                        src={algae.image_url} 
                         alt={algae.scientific_name}
                         className="w-10 h-10 rounded object-cover"
                       />
