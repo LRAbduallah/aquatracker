@@ -101,7 +101,7 @@ const InteractiveMap = ({ locations, height = "600px", mapboxToken }: Interactiv
   if (!currentToken) {
     return (
       <div 
-        className="bg-secondary rounded-lg flex flex-col items-center justify-center p-8 space-y-4"
+        className="bg-zinc-900 opacity-95 rounded-lg border border-green flex flex-col items-center justify-center p-8 space-y-4"
         style={{ height }}
       >
         <h3 className="text-lg font-semibold text-foreground">Mapbox Token Required</h3>
