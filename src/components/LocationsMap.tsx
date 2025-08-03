@@ -53,7 +53,7 @@ const LocationsMap = ({ locations, height = "500px" }: LocationsMapProps) => {
     <MapContainer
       center={center as [number, number]}
       zoom={locations.length > 0 ? 10 : 2}
-      style={{ height, width: "100%" }}
+      style={{ height, width: "100%" , zIndex: 0 }}
       className="rounded-lg"
     >
       <MapMarkerIcon />
