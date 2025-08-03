@@ -107,14 +107,14 @@ export default function AlgaeListPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-green-600 to-teal-500 bg-clip-text text-transparent">
             Algae Catalog
           </h1>
           <p className="text-muted-foreground text-lg">Discover and manage algae specimens</p>
         </div>
         <Button 
           onClick={() => navigate('/algae/new')}
-          className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 shadow-lg hover:shadow-xl transition-all duration-200"
+          className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-teal-500 hover:to-teal-600 shadow-lg hover:shadow-xl transition-all duration-200"
           size="lg"
         >
           <Plus className="h-5 w-5 mr-2" />

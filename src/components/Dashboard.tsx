@@ -35,7 +35,7 @@ export const Dashboard: React.FC = () => {
       title: 'Collection Locations', 
       value: isLoadingLocations ? '...' : totalLocations.toString(),
       icon: MapPin,
-      color: 'text-blue-600'
+      color: 'text-teal-600'
     },
     { 
       title: 'Recent Additions', 
@@ -85,11 +85,15 @@ export const Dashboard: React.FC = () => {
     <div className="space-y-6">
       <header className="flex justify-between items-start">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-teal-500 bg-clip-text text-transparent">Dashboard</h1>
           <p className="text-muted-foreground mt-2">Overview of algae specimens and collection data</p>
         </div>
         <div className="flex gap-2">
-          <Button onClick={() => navigate('/algae/new')}>
+          <Button onClick={() => navigate('/locations/new')} className="bg-gradient-to-r from-green-500 to-teal-500 text-white shadow-lg">
+            <MapPin className="h-4 w-4 mr-2" />
+            Add Location
+          </Button>
+          <Button onClick={() => navigate('/algae/new')} className="bg-gradient-to-r from-green-500 to-teal-500 text-white shadow-lg">
             <Plus className="h-4 w-4 mr-2" />
             Add Algae
           </Button>
@@ -235,7 +239,7 @@ export const Dashboard: React.FC = () => {
               value="+8%"
               period="Last 30 Days"
               change="+8%"
-              changeColor="text-blue-500"
+              changeColor="text-teal-500"
               chartImage="https://api.builder.io/api/v1/image/assets/04a7aa9e6811400f96a0b330187abaf9/bbf77e16a57059845c996a6ec0ea3f966db1105e"
             />
           </div>
