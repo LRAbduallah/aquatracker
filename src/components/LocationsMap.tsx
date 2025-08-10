@@ -1,7 +1,7 @@
 'use client';
 
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import { LocationFeature } from "@/types/api";
+import { BackendLocation } from "@/types/api";
 import MapMarkerIcon from "@/components/MapMarkerIcon";
 import "leaflet/dist/leaflet.css";
 import { useEffect, useState } from "react";
@@ -19,7 +19,7 @@ let DefaultIcon = L.icon({
 L.Marker.prototype.options.icon = DefaultIcon;
 
 interface LocationsMapProps {
-  locations: LocationFeature[];
+  locations: BackendLocation[];
   height?: string;
 }
 
@@ -44,8 +44,8 @@ const LocationsMap = ({ locations, height = "500px" }: LocationsMapProps) => {
   // Calculate center point from all locations
   const center = locations.length > 0 
     ? [
-        locations.reduce((sum, loc) => sum + loc.geometry.coordinates[1], 0) / locations.length,
-        locations.reduce((sum, loc) => sum + loc.geometry.coordinates[0], 0) / locations.length,
+        locations.reduce((sum, loc) => sum + loc.coordinates[1], 0) / locations.length,
+        locations.reduce((sum, loc) => sum + loc.coordinates[0], 0) / locations.length,
       ]
     : [0, 0];
 
@@ -65,16 +65,18 @@ const LocationsMap = ({ locations, height = "500px" }: LocationsMapProps) => {
         <Marker 
           key={location.id}
           position={[
-            location.geometry.coordinates[1],
-            location.geometry.coordinates[0]
+            location.coordinates[1],
+            location.coordinates[0]
           ]}
         >
           <Popup>
             <div>
-              <h3 className="font-semibold">{location.properties.name}</h3>
-              <p className="text-sm text-gray-600">{location.properties.description}</p>
+              <h3 className="font-semibold">{location.name}</h3>
+              {location.description && (
+                <p className="text-sm text-gray-600">{location.description}</p>
+              )}
               <p className="text-xs text-gray-500 mt-1">
-                {location.geometry.coordinates[1].toFixed(4)}, {location.geometry.coordinates[0].toFixed(4)}
+                {location.coordinates[1].toFixed(4)}, {location.coordinates[0].toFixed(4)}
               </p>
             </div>
           </Popup>

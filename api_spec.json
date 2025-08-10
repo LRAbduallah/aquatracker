@@ -128,6 +128,16 @@
                   "description": "Filter by order"
                 },
                 {
+                  "key": "family",
+                  "value": "Sciniaceae",
+                  "description": "Filter by family"
+                },
+                {
+                  "key": "location_ids",
+                  "value": "1,2,3",
+                  "description": "Filter by location IDs (comma-separated)"
+                },
+                {
                   "key": "search",
                   "value": "Scinaia",
                   "description": "Search in scientific_name, common_name, description"
@@ -164,54 +174,13 @@
               "path": ["api", "algae", ""]
             },
             "body": {
-              "mode": "formdata",
-              "formdata": [
-                {
-                  "key": "scientific_name",
-                  "value": "Scinaia furcellata",
-                  "type": "text"
-                },
-                {
-                  "key": "class_name",
-                  "value": "Rhodophyceae",
-                  "type": "text"
-                },
-                {
-                  "key": "order",
-                  "value": "Nemaliales",
-                  "type": "text"
-                },
-                {
-                  "key": "family",
-                  "value": "Sciniaceae",
-                  "type": "text"
-                },
-                {
-                  "key": "genus",
-                  "value": "Scinia",
-                  "type": "text"
-                },
-                {
-                  "key": "species",
-                  "value": "furcellata",
-                  "type": "text"
-                },
-                {
-                  "key": "description",
-                  "value": "Description of the algae",
-                  "type": "text"
-                },
-                {
-                  "key": "location_id",
-                  "value": "1",
-                  "type": "text"
-                },
-                {
-                  "key": "image",
-                  "type": "file",
-                  "src": "/path/to/image.jpg"
+              "mode": "raw",
+              "raw": "{\n    \"scientific_name\": \"Scinaia furcellata\",\n    \"class_name\": \"Rhodophyceae\",\n    \"order\": \"Nemaliales\",\n    \"family\": \"Sciniaceae\",\n    \"genus\": \"Scinia\",\n    \"species\": \"furcellata\",\n    \"location_ids\": [1, 2],\n    \"description\": \"Description of the algae\",\n    \"collection_date\": \"2025-01-01\",\n    \"collector\": \"Researcher Name\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
                 }
-              ]
+              }
             }
           }
         },
@@ -232,19 +201,13 @@
               ]
             },
             "body": {
-              "mode": "formdata",
-              "formdata": [
-                {
-                  "key": "scientific_name",
-                  "value": "Updated Scientific Name",
-                  "type": "text"
-                },
-                {
-                  "key": "description",
-                  "value": "Updated description",
-                  "type": "text"
+              "mode": "raw",
+              "raw": "{\n    \"scientific_name\": \"Updated Scientific Name\",\n    \"description\": \"Updated description\",\n    \"location_ids\": [1, 3]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
                 }
-              ]
+              }
             }
           }
         },

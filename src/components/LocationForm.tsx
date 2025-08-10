@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { LocationFeature } from '@/types/api';
+import { BackendLocation } from '@/types/api';
 import { useCreateLocation, useUpdateLocation } from '@/hooks/useLocations';
 import { toast } from 'sonner';
 
@@ -22,7 +22,7 @@ const locationSchema = z.object({
 type LocationFormData = z.infer<typeof locationSchema>;
 
 interface LocationFormProps {
-  initialData?: LocationFeature;
+  initialData?: BackendLocation;
   isEdit?: boolean;
 }
 
@@ -34,10 +34,10 @@ export default function LocationForm({ initialData, isEdit = false }: LocationFo
   const form = useForm<LocationFormData>({
     resolver: zodResolver(locationSchema),
     defaultValues: {
-      name: initialData?.properties.name || "",
-      description: initialData?.properties.description || "",
-      latitude: initialData?.geometry.coordinates[1] || 0,
-      longitude: initialData?.geometry.coordinates[0] || 0,
+      name: initialData?.name || "",
+      description: initialData?.description || "",
+      latitude: initialData?.coordinates?.[1] || 0,
+      longitude: initialData?.coordinates?.[0] || 0,
     },
   });
 
@@ -46,24 +46,34 @@ export default function LocationForm({ initialData, isEdit = false }: LocationFo
       const locationInput = {
         name: data.name,
         description: data.description || "",
-        coordinates: {
-          type: 'Point' as const,
-          coordinates: [data.longitude, data.latitude] as [number, number],
-        },
+        coordinates: [data.longitude, data.latitude] as [number, number]
       };
 
       if (isEdit && initialData) {
-        await updateLocation.mutateAsync({ id: initialData.id, data: locationInput });
-        toast.success("Location updated successfully!");
+        try {
+          await updateLocation.mutateAsync({ 
+            id: initialData.id, 
+            data: locationInput 
+          });
+          toast.success("Location updated successfully!");
+          navigate("/locations");
+        } catch (error) {
+          console.error("Error updating location:", error);
+          throw error; // Re-throw to be caught by the outer catch
+        }
       } else {
-        await createLocation.mutateAsync(locationInput);
-        toast.success("Location created successfully!");
+        try {
+          await createLocation.mutateAsync(locationInput);
+          toast.success("Location created successfully!");
+          navigate("/locations");
+        } catch (error) {
+          console.error("Error creating location:", error);
+          throw error; // Re-throw to be caught by the outer catch
+        }
       }
-      
-      navigate("/locations");
     } catch (error) {
       toast.error("Failed to save location. Please try again.");
-      console.error("Error saving location:", error);
+      console.error("Error in form submission:", error);
     }
   };
 

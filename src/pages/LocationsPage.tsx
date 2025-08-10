@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { useLocations, useDeleteLocation } from '@/hooks/useLocations';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import LocationsMap from '@/components/LocationsMap';
-import { LocationFeature } from '@/types/api';
+import { BackendLocation } from '@/types/api';
 import { Plus, MapPin, Calendar, Trash2, Edit, Eye } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -24,7 +24,9 @@ export default function LocationsPage() {
     setIsMounted(true);
   }, []);
 
-  const locations = locationsResponse?.data?.results?.features || [];
+  const locations: BackendLocation[] = locationsResponse?.data?.results || [];
+
+  console.log('Locations data:', locations); // Debug log
 
   const handleDeleteClick = (id: number) => {
     setDeleteDialogState({ isOpen: true, locationId: id });
@@ -69,15 +71,20 @@ export default function LocationsPage() {
         {/* Locations List */}
         <div className="space-y-4">
           <h2 className="text-xl font-semibold">All Locations</h2>
-          {locations.map((location: LocationFeature) => (
+          {locations.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              No locations found. Create your first location to get started.
+            </div>
+          ) : (
+            locations.map((location: BackendLocation) => (
             <Card key={location.id} className="hover:shadow-md transition-shadow">
               <CardContent className="p-4">
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
-                    <h3 className="text-lg font-semibold mb-2">{location.properties.name}</h3>
-                    {location.properties.description && (
+                    <h3 className="text-lg font-semibold mb-2">{location.name}</h3>
+                    {location.description && (
                       <p className="text-sm text-muted-foreground mb-3">
-                        {location.properties.description}
+                        {location.description}
                       </p>
                     )}
                     <div className="space-y-1 text-sm">
@@ -85,13 +92,13 @@ export default function LocationsPage() {
                         <MapPin className="h-4 w-4 text-muted-foreground" />
                         <span className="text-muted-foreground">Coordinates:</span>
                         <Badge variant="secondary">
-                          {location.geometry.coordinates[1].toFixed(4)}, {location.geometry.coordinates[0].toFixed(4)}
+                          {location.coordinates[1].toFixed(4)}, {location.coordinates[0].toFixed(4)}
                         </Badge>
                       </div>
                       <div className="flex items-center gap-2">
                         <Calendar className="h-4 w-4 text-muted-foreground" />
                         <span className="text-muted-foreground">Created:</span>
-                        <span>{new Date(location.properties.created_at).toLocaleDateString()}</span>
+                        <span>{new Date(location.created_at).toLocaleDateString()}</span>
                       </div>
                     </div>
                   </div>
@@ -115,7 +122,8 @@ export default function LocationsPage() {
                 </div>
               </CardContent>
             </Card>
-          ))}
+            ))
+          )}
           
           {locations.length === 0 && (
             <Card>
