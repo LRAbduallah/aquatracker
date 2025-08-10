@@ -63,24 +63,31 @@ export const Header: React.FC<HeaderProps> = ({
               <Menu className="h-5 w-5" />
             </Button>
             <div className="flex items-center gap-3">
-              <img 
-                src="/images/college-logo.png" 
-                alt="S.T. Hindu College Logo" 
-                className="h-8 w-auto"
-                onError={(e) => {
-                  e.currentTarget.style.display = 'none';
-                }}
-              />
-              <div className="flex flex-col">
+              <a 
+                href="https://www.sthinducollege.com/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="hover:opacity-80 transition-opacity"
+              >
+                <img 
+                  src="/images/college-logo.png" 
+                  alt="S.T. Hindu College Logo" 
+                  className="h-8 w-auto"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+              </a>
+              <Link to="/" className="flex flex-col hover:opacity-80 transition-opacity">
                 <h1 className="text-lg font-bold text-primary leading-tight">AquaTracker</h1>
-                <p className="text-xs text-muted-foreground leading-tight">S.T. Hindu College</p>
-              </div>
+                <p className="text-xs text-muted-foreground leading-tight">Research Platform</p>
+              </Link>
             </div>
           </div>
 
           {/* Center: Navigation (Desktop) */}
           <nav className="hidden lg:flex items-center gap-4 xl:gap-8">
-            <Link to="/" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+            <Link to="/dashboard" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
               Dashboard
             </Link>
             <Link to="/map" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
