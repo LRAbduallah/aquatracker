@@ -1,6 +1,6 @@
 'use client';
 
-import { MapContainer, TileLayer, Marker } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { LocationFeature } from "@/types/api";
 import MapMarkerIcon from "@/components/MapMarkerIcon";
 import "leaflet/dist/leaflet.css";
@@ -19,15 +19,34 @@ let DefaultIcon = L.icon({
 L.Marker.prototype.options.icon = DefaultIcon;
 
 interface AlgaeLocationMapProps {
-  location: LocationFeature;
+  locations: LocationFeature[];
 }
 
-const AlgaeLocationMap = ({ location }: AlgaeLocationMapProps) => {
+const AlgaeLocationMap = ({ locations }: AlgaeLocationMapProps) => {
   const [isMounted, setIsMounted] = useState(false);
+  const [map, setMap] = useState<L.Map | null>(null);
+  const [bounds, setBounds] = useState<L.LatLngBounds | null>(null);
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  // Calculate bounds when locations change
+  useEffect(() => {
+    if (locations.length === 0 || !map) return;
+
+    const newBounds = new L.LatLngBounds(
+      locations.map(loc => [
+        loc.geometry.coordinates[1], // latitude
+        loc.geometry.coordinates[0], // longitude
+      ])
+    );
+    
+    // Add some padding to the bounds
+    newBounds.pad(0.1);
+    setBounds(newBounds);
+    map.fitBounds(newBounds);
+  }, [locations, map]);
 
   if (!isMounted) {
     return (
@@ -37,24 +56,49 @@ const AlgaeLocationMap = ({ location }: AlgaeLocationMapProps) => {
     );
   }
 
-  const coordinates = [
-    location.geometry.coordinates[1], // latitude
-    location.geometry.coordinates[0], // longitude
-  ];
+  // Use first location as center if available, or default to [0, 0]
+  const center = locations.length > 0
+    ? [
+        locations[0].geometry.coordinates[1], // latitude
+        locations[0].geometry.coordinates[0], // longitude
+      ]
+    : [0, 0];
 
   return (
     <MapContainer
-      center={coordinates as [number, number]}
-      zoom={13}
+      center={center as [number, number]}
+      zoom={locations.length === 1 ? 13 : 2}
       style={{ height: "300px", width: "100%" }}
       className="rounded-lg"
+      whenReady={() => {
+        // The map is ready
+      }}
+      ref={(map) => map && setMap(map)}
     >
       <MapMarkerIcon />
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      <Marker position={coordinates as [number, number]} />
+      {locations.map((location, index) => (
+        <Marker 
+          key={location.id} 
+          position={[
+            location.geometry.coordinates[1], // latitude
+            location.geometry.coordinates[0], // longitude
+          ] as [number, number]}
+          title={location.properties.name}
+        >
+          <Popup>
+            <div className="text-sm">
+              <div className="font-medium">{location.properties.name}</div>
+              {location.properties.description && (
+                <div className="text-gray-600">{location.properties.description}</div>
+              )}
+            </div>
+          </Popup>
+        </Marker>
+      ))}
     </MapContainer>
   );
 };

@@ -188,24 +188,38 @@ export default function AlgaeView({ algae }: AlgaeViewProps) {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div>
-                <h4 className="font-medium mb-2">{algae.location.properties.name}</h4>
-                {algae.location.properties.description && (
-                  <p className="text-sm text-muted-foreground mb-4">
-                    {algae.location.properties.description}
-                  </p>
+              <div className="space-y-4">
+                {algae.locations && algae.locations.length > 0 ? (
+                  algae.locations.map((location) => (
+                    <div key={location.id} className="border rounded-lg p-4">
+                      <h4 className="font-medium mb-1">{location.properties.name}</h4>
+                      {location.properties.description && (
+                        <p className="text-sm text-muted-foreground mb-2">
+                          {location.properties.description}
+                        </p>
+                      )}
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <MapPin className="h-4 w-4 flex-shrink-0" />
+                        <span>
+                          {`${location.geometry.coordinates[1].toFixed(4)}, ${location.geometry.coordinates[0].toFixed(4)}`}
+                        </span>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-sm text-muted-foreground italic">No location data available</div>
                 )}
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <MapPin className="h-4 w-4" />
-                  <span>
-                    {algae.location.geometry.coordinates[1].toFixed(4)}, {algae.location.geometry.coordinates[0].toFixed(4)}
-                  </span>
-                </div>
               </div>
               
               {/* Map */}
-              <div className="mt-4">
-                <AlgaeLocationMap location={algae.location} />
+              <div className="h-64 rounded-lg overflow-hidden">
+                {algae.locations && algae.locations.length > 0 ? (
+                  <AlgaeLocationMap locations={algae.locations} />
+                ) : (
+                  <div className="h-full flex items-center justify-center bg-gray-50 dark:bg-gray-800 text-muted-foreground">
+                    No location data available for map
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>

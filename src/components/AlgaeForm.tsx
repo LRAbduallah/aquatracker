@@ -26,7 +26,7 @@ const algaeSchema = z.object({
   genus: z.string().optional(),
   species: z.string().optional(),
   description: z.string().optional(),
-  location_id: z.string().min(1, "Location is required"),
+  location_ids: z.array(z.number().int().positive("Location ID must be a positive number")).min(1, "At least one location is required"),
   collection_date: z.string().optional(),
   collector: z.string().optional(),
   image: z.any().optional(),
@@ -47,7 +47,7 @@ export default function AlgaeForm({ initialData, isEdit = false }: AlgaeFormProp
 
   // Fetch locations from backend
   const { data: locationsResponse, isLoading: isLoadingLocations } = useLocations();
-  const locations = locationsResponse?.data?.results?.features || [];
+  const locations = locationsResponse?.data?.results || [];
 
   const createAlgae = useCreateAlgae();
   const updateAlgae = useUpdateAlgae();
@@ -63,7 +63,7 @@ export default function AlgaeForm({ initialData, isEdit = false }: AlgaeFormProp
       genus: initialData?.genus || "",
       species: initialData?.species || "",
       description: initialData?.description || "",
-      location_id: initialData?.location?.id?.toString() || "",
+      location_ids: initialData?.locations?.map(loc => loc.id) || [],
       collection_date: initialData?.collection_date || "",
       collector: initialData?.collector || "",
     },
@@ -71,26 +71,52 @@ export default function AlgaeForm({ initialData, isEdit = false }: AlgaeFormProp
 
   const onSubmit = async (data: AlgaeFormData) => {
     try {
-      const formData = new FormData();
+      // Prepare the request data
+      const requestData: any = { ...data };
       
-      // Append all form fields
-      Object.entries(data).forEach(([key, value]) => {
-        if (value !== undefined && value !== "") {
-          formData.append(key, value.toString());
-        }
-      });
-
-      // Handle image file separately
-      const imageFile = form.getValues("image");
-      if (imageFile instanceof File) {
-        formData.append("image", imageFile);
+      // Deduplicate location_ids
+      if (Array.isArray(data.location_ids)) {
+        requestData.location_ids = [...new Set(data.location_ids)];
       }
       
+      // Handle image file separately if present
+      const imageFile = form.getValues("image");
+      
       if (isEdit && initialData) {
-        await updateAlgae.mutateAsync({ id: initialData.id, data: formData });
+        if (imageFile instanceof File) {
+          // For updates with file, use FormData
+          const formData = new FormData();
+          formData.append('image', imageFile);
+          // Convert other fields to JSON and append as a single field
+          const { image, ...jsonData } = requestData;
+          formData.append('data', JSON.stringify(jsonData));
+          
+          await updateAlgae.mutateAsync({ 
+            id: initialData.id, 
+            data: formData 
+          });
+        } else {
+          // No file, send as JSON
+          await updateAlgae.mutateAsync({ 
+            id: initialData.id, 
+            data: requestData 
+          });
+        }
         toast.success("Algae specimen updated successfully!");
       } else {
-        await createAlgae.mutateAsync(formData);
+        if (imageFile instanceof File) {
+          // For new records with file, use FormData with JSON data
+          const formData = new FormData();
+          formData.append('image', imageFile);
+          // Convert other fields to JSON and append as a single field
+          const { image, ...jsonData } = requestData;
+          formData.append('data', JSON.stringify(jsonData));
+          
+          await createAlgae.mutateAsync(formData);
+        } else {
+          // No file, send as JSON
+          await createAlgae.mutateAsync(requestData);
+        }
         toast.success("Algae specimen created successfully!");
       }
       
@@ -191,32 +217,67 @@ export default function AlgaeForm({ initialData, isEdit = false }: AlgaeFormProp
               {/* Location Selection */}
               <FormField
                 control={form.control}
-                name="location_id"
+                name="location_ids"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Location *</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isLoadingLocations}>
+                    <FormLabel>Collection Locations *</FormLabel>
+                    <Select 
+                      onValueChange={(value) => {
+                        const currentValues = form.getValues('location_ids') || [];
+                        const locationId = Number(value);
+                        if (!currentValues.includes(locationId)) {
+                          form.setValue('location_ids', [...currentValues, locationId]);
+                        }
+                      }}
+                      value=""
+                      disabled={isLoadingLocations}
+                    >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select a location" />
+                          <SelectValue placeholder="Add a location" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {locations.map((location: LocationFeature) => (
-                          <SelectItem key={location.id} value={location.id.toString()}>
-                            {location.properties.name}
-                          </SelectItem>
-                        ))}
+                        {locations
+                          .filter(location => !form.getValues('location_ids')?.includes(location.id))
+                          .map((location) => (
+                            <SelectItem key={location.id} value={location.id.toString()}>
+                              {location.name}
+                            </SelectItem>
+                          ))}
                       </SelectContent>
                     </Select>
-                    {isLoadingLocations && (
-                      <p className="text-sm text-muted-foreground">Loading locations...</p>
-                    )}
+                    <div className="mt-2 space-y-2">
+                      {form.getValues('location_ids')?.map((locationId) => {
+                        const location = locations.find(loc => loc.id === locationId);
+                        return location ? (
+                          <div key={location.id} className="flex items-center justify-between p-2 bg-secondary rounded">
+                            <span>{location.name}</span>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                const currentValues = form.getValues('location_ids') || [];
+                                form.setValue(
+                                  'location_ids',
+                                  currentValues.filter(id => id !== locationId)
+                                );
+                              }}
+                            >
+                              Remove
+                            </Button>
+                          </div>
+                        ) : null;
+                      })}
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-
+              {isLoadingLocations && (
+                <p className="text-sm text-muted-foreground">Loading locations...</p>
+              )}
               {/* Taxonomic Classification */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <FormField

@@ -22,7 +22,16 @@ export interface LocationResponse {
   count: number;
   next: string | null;
   previous: string | null;
-  results: LocationFeatureCollection;
+  results: BackendLocation[];
+}
+
+export interface BackendLocation {
+  id: number;
+  name: string;
+  description: string;
+  coordinates: [number, number]; // [longitude, latitude]
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Algae {
@@ -35,7 +44,8 @@ export interface Algae {
   genus: string;
   species: string;
   description: string;
-  location: LocationFeature;
+  locations: LocationFeature[]; // Normalized locations for frontend
+  raw_locations?: BackendLocation[]; // Raw locations from backend
   collection_date: string;
   collector: string;
   image: string | null;
@@ -54,10 +64,7 @@ export interface AlgaeResponse {
 export interface LocationInput {
   name: string;
   description?: string;
-  coordinates: {
-    type: 'Point';
-    coordinates: [number, number];
-  };
+  coordinates: [number, number]; // [longitude, latitude]
 }
 
 export interface AlgaeInput {
@@ -69,7 +76,7 @@ export interface AlgaeInput {
   genus?: string;
   species?: string;
   description?: string;
-  location_id: number;
+  location_ids: number[];
   collection_date?: string;
   collector?: string;
   image?: File;
