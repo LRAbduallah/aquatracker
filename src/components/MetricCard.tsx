@@ -19,15 +19,15 @@ export const MetricCard: React.FC<MetricCardProps> = ({
 }) => {
   return (
     <Card className={className}>
-      <CardContent className="p-6">
-        <div className="flex items-center justify-between">
+      <CardContent className="p-3 sm:p-4 lg:p-6">
+        <div className="flex items-center justify-between gap-2">
           <div>
-            <p className="text-sm font-medium text-muted-foreground">{title}</p>
-            <p className="text-2xl font-bold">{value}</p>
+            <p className="text-xs sm:text-sm font-medium text-muted-foreground leading-tight">{title}</p>
+            <p className="text-lg sm:text-xl lg:text-2xl font-bold">{value}</p>
           </div>
           {Icon && (
-            <div className={`p-2 rounded-lg bg-muted ${color}`}>
-              <Icon className="h-4 w-4" />
+            <div className={`p-1.5 sm:p-2 rounded-lg bg-muted ${color} flex-shrink-0`}>
+              <Icon className="h-3 w-3 sm:h-4 sm:w-4" />
             </div>
           )}
         </div>

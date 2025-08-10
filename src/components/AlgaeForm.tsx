@@ -139,16 +139,16 @@ export default function AlgaeForm({ initialData, isEdit = false }: AlgaeFormProp
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
+    <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8 max-w-4xl">
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl font-bold">
+          <CardTitle className="text-xl sm:text-2xl font-bold">
             {isEdit ? "Edit Algae Specimen" : "Add New Algae Specimen"}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6">
               {/* Image Upload */}
               <FormField
                 control={form.control}
@@ -157,8 +157,8 @@ export default function AlgaeForm({ initialData, isEdit = false }: AlgaeFormProp
                   <FormItem>
                     <FormLabel>Image</FormLabel>
                     <FormControl>
-                      <div className="flex items-center gap-4">
-                        <div className="relative h-32 w-32 overflow-hidden rounded-lg bg-secondary border">
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                        <div className="relative h-24 w-24 sm:h-32 sm:w-32 overflow-hidden rounded-lg bg-secondary border flex-shrink-0">
                           {previewImage ? (
                             <img
                               src={previewImage}
@@ -167,7 +167,7 @@ export default function AlgaeForm({ initialData, isEdit = false }: AlgaeFormProp
                             />
                           ) : (
                             <div className="flex h-full items-center justify-center text-muted-foreground">
-                              No image
+                              <span className="text-xs">No image</span>
                             </div>
                           )}
                         </div>
@@ -251,12 +251,13 @@ export default function AlgaeForm({ initialData, isEdit = false }: AlgaeFormProp
                       {form.getValues('location_ids')?.map((locationId) => {
                         const location = locations.find(loc => loc.id === locationId);
                         return location ? (
-                          <div key={location.id} className="flex items-center justify-between p-2 bg-secondary rounded">
-                            <span>{location.name}</span>
+                          <div key={location.id} className="flex items-center justify-between p-2 bg-secondary rounded gap-2">
+                            <span className="truncate flex-1 text-sm">{location.name}</span>
                             <Button
                               type="button"
                               variant="ghost"
                               size="sm"
+                              className="flex-shrink-0 text-xs"
                               onClick={() => {
                                 const currentValues = form.getValues('location_ids') || [];
                                 form.setValue(
@@ -279,7 +280,7 @@ export default function AlgaeForm({ initialData, isEdit = false }: AlgaeFormProp
                 <p className="text-sm text-muted-foreground">Loading locations...</p>
               )}
               {/* Taxonomic Classification */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 <FormField
                   control={form.control}
                   name="class_name"
@@ -323,7 +324,7 @@ export default function AlgaeForm({ initialData, isEdit = false }: AlgaeFormProp
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
                   name="genus"
@@ -361,7 +362,7 @@ export default function AlgaeForm({ initialData, isEdit = false }: AlgaeFormProp
                   <FormItem>
                     <FormLabel>Description</FormLabel>
                     <FormControl>
-                      <Textarea placeholder="Enter description" rows={4} {...field} />
+                      <Textarea placeholder="Enter description" rows={3} className="resize-none" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -369,7 +370,7 @@ export default function AlgaeForm({ initialData, isEdit = false }: AlgaeFormProp
               />
 
               {/* Collection Details */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
                   name="collection_date"
@@ -400,18 +401,20 @@ export default function AlgaeForm({ initialData, isEdit = false }: AlgaeFormProp
               </div>
 
               {/* Form Actions */}
-              <div className="flex justify-end gap-4 pt-6">
+              <div className="flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 pt-4 sm:pt-6">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => navigate("/algae")}
                   disabled={form.formState.isSubmitting}
+                  className="w-full sm:w-auto"
                 >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
                   disabled={form.formState.isSubmitting || createAlgae.isPending || updateAlgae.isPending}
+                  className="w-full sm:w-auto"
                 >
                   {form.formState.isSubmitting || createAlgae.isPending || updateAlgae.isPending
                     ? "Saving..."

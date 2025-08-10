@@ -54,23 +54,26 @@ export default function LocationsPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
       {/* Header */}
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Locations</h1>
-          <p className="text-muted-foreground">Manage collection locations</p>
+          <h1 className="text-2xl sm:text-3xl font-bold">Locations</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">Manage collection locations</p>
         </div>
-        <Button onClick={() => navigate("/locations/new")}>
+        <Button 
+          onClick={() => navigate("/locations/new")}
+          className="w-full sm:w-auto"
+        >
           <Plus className="h-4 w-4 mr-2" />
           Add New Location
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
         {/* Locations List */}
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold">All Locations</h2>
+          <h2 className="text-lg sm:text-xl font-semibold">All Locations</h2>
           {locations.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               No locations found. Create your first location to get started.
@@ -78,16 +81,16 @@ export default function LocationsPage() {
           ) : (
             locations.map((location: BackendLocation) => (
             <Card key={location.id} className="hover:shadow-md transition-shadow">
-              <CardContent className="p-4">
+              <CardContent className="p-3 sm:p-4">
                 <div className="flex justify-between items-start">
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold mb-2">{location.name}</h3>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-base sm:text-lg font-semibold mb-2 break-words">{location.name}</h3>
                     {location.description && (
-                      <p className="text-sm text-muted-foreground mb-3">
+                      <p className="text-xs sm:text-sm text-muted-foreground mb-3 break-words">
                         {location.description}
                       </p>
                     )}
-                    <div className="space-y-1 text-sm">
+                    <div className="space-y-1 text-xs sm:text-sm">
                       <div className="flex items-center gap-2">
                         <MapPin className="h-4 w-4 text-muted-foreground" />
                         <span className="text-muted-foreground">Coordinates:</span>
@@ -102,11 +105,12 @@ export default function LocationsPage() {
                       </div>
                     </div>
                   </div>
-                  <div className="flex gap-1 ml-4">
+                  <div className="flex flex-col sm:flex-row gap-1 ml-2 sm:ml-4 flex-shrink-0">
                     <Button
                       size="sm"
                       variant="ghost"
                       onClick={() => navigate(`/locations/${location.id}/edit`)}
+                      className="h-8 w-8 p-0"
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
@@ -115,6 +119,7 @@ export default function LocationsPage() {
                       variant="ghost"
                       onClick={() => handleDeleteClick(location.id)}
                       disabled={deleteLocation.isPending}
+                      className="h-8 w-8 p-0"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -127,13 +132,16 @@ export default function LocationsPage() {
           
           {locations.length === 0 && (
             <Card>
-              <CardContent className="p-8 text-center">
+              <CardContent className="p-6 sm:p-8 text-center">
                 <MapPin className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">No locations found</h3>
-                <p className="text-muted-foreground mb-4">
+                <h3 className="text-base sm:text-lg font-semibold mb-2">No locations found</h3>
+                <p className="text-sm sm:text-base text-muted-foreground mb-4">
                   Get started by adding your first collection location.
                 </p>
-                <Button onClick={() => navigate("/locations/new")}>
+                <Button 
+                  onClick={() => navigate("/locations/new")}
+                  className="w-full sm:w-auto"
+                >
                   <Plus className="h-4 w-4 mr-2" />
                   Add Location
                 </Button>
@@ -144,8 +152,8 @@ export default function LocationsPage() {
 
         {/* Map */}
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold">Map View</h2>
-          <div className="h-[600px] rounded-lg overflow-hidden">
+          <h2 className="text-lg sm:text-xl font-semibold">Map View</h2>
+          <div className="h-[400px] sm:h-[500px] lg:h-[600px] rounded-lg overflow-hidden">
             {isMounted && <LocationsMap locations={locations} height="600px" />}
           </div>
         </div>

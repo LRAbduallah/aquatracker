@@ -67,13 +67,13 @@ export const SettingsPage: React.FC = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
+    <div className="max-w-4xl mx-auto space-y-6 sm:space-y-8 px-2 sm:px-0">
       <header>
-        <h1 className="text-3xl font-bold text-foreground">Settings</h1>
-        <p className="text-muted-foreground mt-2">Manage your account and application preferences</p>
+        <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Settings</h1>
+        <p className="text-sm sm:text-base text-muted-foreground mt-2">Manage your account and application preferences</p>
       </header>
       
-      <div className="grid gap-6">
+      <div className="grid gap-4 sm:gap-6">
         {/* Account Settings */}
         <Card>
           <CardHeader>
@@ -83,8 +83,8 @@ export const SettingsPage: React.FC = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-3 sm:space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="name">Name</Label>
                   <Input
@@ -115,7 +115,7 @@ export const SettingsPage: React.FC = () => {
               
               <Separator className="my-4" />
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="currentPassword">Current Password</Label>
                   <Input
@@ -143,7 +143,11 @@ export const SettingsPage: React.FC = () => {
               </div>
               
               <div className="flex justify-end">
-                <Button type="submit" disabled={isSubmitting}>
+                <Button 
+                  type="submit" 
+                  disabled={isSubmitting}
+                  className="w-full sm:w-auto"
+                >
                   {isSubmitting ? 'Updating...' : 'Update Account'}
                 </Button>
               </div>
@@ -164,14 +168,14 @@ export const SettingsPage: React.FC = () => {
               {locations.map((location) => (
                 <div
                   key={location.id}
-                  className="flex items-center gap-4 p-4 rounded-lg border border-border hover:bg-accent/50 transition-colors"
+                  className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-lg border border-border hover:bg-accent/50 transition-colors"
                 >
-                  <div className="w-10 h-10 bg-secondary rounded-lg flex items-center justify-center">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-secondary rounded-lg flex items-center justify-center flex-shrink-0">
                     <MapPin className="w-5 h-5 text-secondary-foreground" />
                   </div>
-                  <div className="flex-1">
-                    <h3 className="font-medium text-foreground">{location.name}</h3>
-                    <p className="text-sm text-muted-foreground">{location.coordinates}</p>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-medium text-sm sm:text-base text-foreground truncate">{location.name}</h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground break-all">{location.coordinates}</p>
                   </div>
                 </div>
               ))}

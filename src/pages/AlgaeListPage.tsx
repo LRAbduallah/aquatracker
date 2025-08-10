@@ -114,27 +114,28 @@ export default function AlgaeListPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 min-h-screen">
+    <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8 min-h-screen">
       {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-4">
         <div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-green-600 to-teal-500 bg-clip-text text-transparent">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-green-600 to-teal-500 bg-clip-text text-transparent">
             Algae Catalog
           </h1>
-          <p className="text-muted-foreground text-lg">Discover and manage algae specimens</p>
+          <p className="text-muted-foreground text-sm sm:text-base lg:text-lg">Discover and manage algae specimens</p>
         </div>
         <Button 
           onClick={() => navigate('/algae/new')}
-          className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-teal-500 hover:to-teal-600 shadow-lg hover:shadow-xl transition-all duration-200"
-          size="lg"
+          className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-teal-500 hover:to-teal-600 shadow-lg hover:shadow-xl transition-all duration-200 w-full sm:w-auto"
+          size="default"
         >
-          <Plus className="h-5 w-5 mr-2" />
-          Add New Specimen
+          <Plus className="h-4 w-4 mr-2" />
+          <span className="sm:hidden">Add Specimen</span>
+          <span className="hidden sm:inline">Add New Specimen</span>
         </Button>
       </div>
 
       {/* Filters */}
-      <div className="mb-8">
+      <div className="mb-6 sm:mb-8">
         <FilterBar
           filters={filters}
           onFilterChange={handleFilterChange}
@@ -144,9 +145,9 @@ export default function AlgaeListPage() {
       </div>
 
       {/* Sort Controls */}
-      <div className="mb-8 p-4 backdrop-blur-sm rounded-xl border shadow-sm">
-        <div className="flex flex-wrap gap-3 items-center">
-          <span className="text-sm font-semibold text-white flex items-center">
+      <div className="mb-6 sm:mb-8 p-3 sm:p-4 backdrop-blur-sm rounded-xl border shadow-sm">
+        <div className="flex flex-wrap gap-2 sm:gap-3 items-center">
+          <span className="text-xs sm:text-sm font-semibold text-white flex items-center">
             <Filter className="h-4 w-4 mr-2" />
             Sort by:
           </span>
@@ -158,14 +159,15 @@ export default function AlgaeListPage() {
             <Button
               key={field}
               variant={sort.field === field ? 'default' : 'outline'}
-              size="sm"
+              size="sm" 
               onClick={() => handleSortChange(field as SortField)}
               className={sort.field === field 
                 ? 'bg-green-500 hover:bg-green-600 shadow-md' 
-                : 'border-green-200'
+                : 'border-green-200 text-xs sm:text-sm'
               }
             >
-              {label}
+              <span className="hidden sm:inline">{label}</span>
+              <span className="sm:hidden">{field === 'scientific_name' ? 'Scientific' : field === 'common_name' ? 'Common' : 'Class'}</span>
               {sort.field === field && (
                 <span className="ml-2">
                   {sort.order === 'asc' ? <SortAsc className="h-3 w-3" /> : <SortDesc className="h-3 w-3" />}
@@ -187,7 +189,7 @@ export default function AlgaeListPage() {
       )}
 
       {/* Algae Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
         {sortedAlgae.map((algae: Algae) => (
           <Card 
             key={algae.id} 
@@ -195,7 +197,7 @@ export default function AlgaeListPage() {
             onClick={() => navigate(`/algae/${algae.id}`)}
           >
             <CardHeader className="p-0 relative">
-              <div className="relative w-full h-56 overflow-hidden">
+              <div className="relative w-full h-40 sm:h-48 lg:h-56 overflow-hidden">
                 {algae.image_url ? (
                   <img
                     src={algae.image_url}
@@ -204,37 +206,37 @@ export default function AlgaeListPage() {
                   />
                 ) : (
                   <div className="w-full h-full bg-gradient-to-br from-gray-800 to-gray-700 flex items-center justify-center">
-                    <Leaf className="h-16 w-16 text-green-500/60" />
+                    <Leaf className="h-12 w-12 sm:h-16 sm:w-16 text-green-500/60" />
                   </div>
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 
                 {/* Action buttons overlay */}
-                <div className="absolute top-3 right-3 flex gap-1 opacity-0 group-hover:opacity-100 transition-all duration-200">
+                <div className="absolute top-2 right-2 sm:top-3 sm:right-3 flex gap-1 opacity-0 group-hover:opacity-100 transition-all duration-200">
                   <Button
                     size="sm"
                     variant="secondary"
-                    className="h-8 w-8 p-0 bg-gray-800/90 hover:bg-gray-700 border-gray-600 text-gray-300 shadow-lg"
+                    className="h-6 w-6 sm:h-8 sm:w-8 p-0 bg-gray-800/90 hover:bg-gray-700 border-gray-600 text-gray-300 shadow-lg"
                     onClick={() => navigate(`/algae/${algae.id}/edit`)}
                   >
-                    <Edit className="h-4 w-4" />
+                    <Edit className="h-3 w-3 sm:h-4 sm:w-4" />
                   </Button>
                   <Button
                     size="sm"
                     variant="secondary"
-                    className="h-8 w-8 p-0 bg-gray-800/90 hover:bg-red-900/80 text-red-400 border-gray-600 shadow-lg"
+                    className="h-6 w-6 sm:h-8 sm:w-8 p-0 bg-gray-800/90 hover:bg-red-900/80 text-red-400 border-gray-600 shadow-lg"
                     onClick={() => handleDeleteClick(algae.id)}
                     disabled={deleteAlgae.isPending}
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
                   </Button>
                 </div>
 
                 {/* Class badge */}
-                <div className="absolute bottom-3 left-3">
+                <div className="absolute bottom-2 left-2 sm:bottom-3 sm:left-3">
                   <Badge 
                     variant="secondary" 
-                    className="bg-gray-800/90 text-green-400 font-medium shadow-lg border-gray-700"
+                    className="bg-gray-800/90 text-green-400 font-medium shadow-lg border-gray-700 text-xs"
                   >
                     <Leaf className="h-3 w-3 mr-1" />
                     {algae.class_name}
@@ -243,34 +245,34 @@ export default function AlgaeListPage() {
               </div>
             </CardHeader>
             
-            <CardContent className="p-5 space-y-4">
+            <CardContent className="p-3 sm:p-4 lg:p-5 space-y-3 sm:space-y-4">
               <div>
-                <h3 className="text-lg font-bold text-gray-100 line-clamp-1 mb-1">
+                <h3 className="text-sm sm:text-base lg:text-lg font-bold text-gray-100 line-clamp-1 mb-1">
                   {algae.scientific_name}
                 </h3>
                 {algae.common_name && (
-                  <p className="text-sm text-green-400 font-medium line-clamp-1">
+                  <p className="text-xs sm:text-sm text-green-400 font-medium line-clamp-1">
                     {algae.common_name}
                   </p>
                 )}
               </div>
               
-              <div className="space-y-3">
-                <div className="flex items-center gap-2 text-sm">
+              <div className="space-y-2 sm:space-y-3">
+                <div className="flex items-center gap-2 text-xs sm:text-sm">
                   <Info className="h-4 w-4 text-gray-500" />
                   <span className="text-gray-400">Family:</span>
-                  <span className="font-medium text-gray-200 flex-1 text-right">
+                  <span className="font-medium text-gray-200 flex-1 text-right truncate">
                     {algae.family}
                   </span>
                 </div>
                 
-                <div className="flex items-center gap-2 text-sm">
+                <div className="flex items-center gap-2 text-xs sm:text-sm">
                   <Calendar className="h-4 w-4 text-gray-500" />
                   <span className="text-gray-400">Collected:</span>
                   <span className="font-medium text-gray-200 flex-1 text-right">
                     {new Date(algae.collection_date).toLocaleDateString('en-US', {
                       year: 'numeric',
-                      month: 'short',
+                      month: window.innerWidth < 640 ? 'numeric' : 'short',
                       day: 'numeric'
                     })}
                   </span>
@@ -284,7 +286,7 @@ export default function AlgaeListPage() {
       {/* Loading More Trigger */}
       <div
         ref={loadMoreRef}
-        className="h-20 flex items-center justify-center mt-12"
+        className="h-16 sm:h-20 flex items-center justify-center mt-8 sm:mt-12"
       >
         {isFetchingNextPage ? (
           <div className="flex flex-col items-center gap-3">
@@ -296,7 +298,7 @@ export default function AlgaeListPage() {
         ) : sortedAlgae.length > 0 ? (
           <div className="text-center">
             <p className="text-muted-foreground mb-2">You've reached the end!</p>
-            <p className="text-sm text-gray-500">
+            <p className="text-xs sm:text-sm text-gray-500">
               Showing {sortedAlgae.length} specimen{sortedAlgae.length !== 1 ? 's' : ''}
             </p>
           </div>

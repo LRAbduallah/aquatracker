@@ -59,7 +59,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
 }) => {
   return (
     <Card className="mb-6">
-      <CardContent className="p-4">
+      <CardContent className="p-3 sm:p-4">
         <div className="space-y-4">
           {/* Search Bar */}
           <div className="flex items-center space-x-2">
@@ -76,7 +76,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-4">
             {/* Taxonomy Filters */}
             <div className="space-y-2">
               <Label className="flex items-center gap-2">
@@ -185,15 +185,15 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             </div>
 
             {/* Date Range */}
-            <div className="space-y-2">
+            <div className="space-y-2 sm:col-span-2 lg:col-span-1">
               <Label className="flex items-center gap-2">
                 <CalendarIcon className="h-4 w-4" />
                 Collection Date Range
               </Label>
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button variant="outline" className="w-full justify-start">
+                    <Button variant="outline" className="w-full justify-start text-xs sm:text-sm">
                       <CalendarIcon className="mr-2 h-4 w-4" />
                       {filters?.dateFrom ? (
                         filters.dateFrom.toLocaleDateString()
@@ -213,7 +213,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
                 </Popover>
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button variant="outline" className="w-full justify-start">
+                    <Button variant="outline" className="w-full justify-start text-xs sm:text-sm">
                       <CalendarIcon className="mr-2 h-4 w-4" />
                       {filters?.dateTo ? (
                         filters.dateTo.toLocaleDateString()
@@ -236,9 +236,11 @@ export const FilterBar: React.FC<FilterBarProps> = ({
           </div>
           
           {/* Clear Filters */}
-          <div className="flex justify-end">
+          <div className="flex justify-center sm:justify-end">
             <Button
               variant="outline"
+              size="sm"
+              className="w-full sm:w-auto"
               onClick={() => {
                 onFilterChange('class_name', '');
                 onFilterChange('order', '');

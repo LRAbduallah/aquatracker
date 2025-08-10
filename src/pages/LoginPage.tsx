@@ -53,19 +53,19 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4">
-      <div className="w-full max-w-md space-y-8">
+    <div className="min-h-screen flex items-center justify-center bg-background px-2 sm:px-4">
+      <div className="w-full max-w-md space-y-6 sm:space-y-8">
         {/* Logo/Brand */}
         <div className="text-center">
-          <div className="w-16 h-16 bg-primary rounded-lg flex items-center justify-center mx-auto mb-4">
+          <div className="w-12 h-12 sm:w-16 sm:h-16 bg-primary rounded-lg flex items-center justify-center mx-auto mb-4">
             <img
               src="/favicon.png"
               alt="AquaTrack"
-              className="w-16 h-16 rounded"
+              className="w-12 h-12 sm:w-16 sm:h-16 rounded"
               onError={(e) => {
                 const fallback = document.createElement("div");
                 fallback.className =
-                  "w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center";
+                  "w-6 h-6 sm:w-8 sm:h-8 bg-blue-500 rounded-lg flex items-center justify-center";
                 fallback.innerHTML =
                   '<svg class="h-5 w-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
                 e.currentTarget.parentNode?.replaceChild(
@@ -75,8 +75,8 @@ export default function LoginPage() {
               }}
             />
           </div>
-          <h1 className="text-2xl font-bold text-foreground">AquaTracker</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground">AquaTracker</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">
             Environmental monitoring platform
           </p>
         </div>
@@ -84,13 +84,13 @@ export default function LoginPage() {
         {/* Login Form */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-2xl text-center">Welcome back</CardTitle>
-            <CardDescription className="text-center">
+            <CardTitle className="text-xl sm:text-2xl text-center">Welcome back</CardTitle>
+            <CardDescription className="text-center text-sm sm:text-base">
               Sign in to your account to continue
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-3 sm:space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="username">Username</Label>
                 <Input
@@ -137,7 +137,7 @@ export default function LoginPage() {
               </Button>
             </form>
 
-            <div className="mt-6 text-center text-sm">
+            <div className="mt-4 sm:mt-6 text-center text-sm">
               <span className="text-muted-foreground">
                 Don't have an account?{" "}
               </span>

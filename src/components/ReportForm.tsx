@@ -56,13 +56,13 @@ export const ReportForm: React.FC = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
+    <div className="max-w-2xl mx-auto space-y-4 sm:space-y-6 px-2 sm:px-0">
       <header>
-        <h1 className="text-3xl font-bold text-foreground">Report Algae Bloom</h1>
-        <p className="text-muted-foreground mt-2">Submit a new algae bloom observation</p>
+        <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Report Algae Bloom</h1>
+        <p className="text-sm sm:text-base text-muted-foreground mt-2">Submit a new algae bloom observation</p>
       </header>
       
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6">
         <div className="space-y-2">
           <Label htmlFor="locationName">Location Name</Label>
           <Input
@@ -76,7 +76,7 @@ export const ReportForm: React.FC = () => {
           )}
         </div>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
           <div className="space-y-2">
             <Label htmlFor="latitude">Latitude</Label>
             <Input
@@ -108,7 +108,11 @@ export const ReportForm: React.FC = () => {
         </div>
         
         <div className="flex justify-start">
-          <Button type="button" variant="outline">
+          <Button 
+            type="button" 
+            variant="outline"
+            className="w-full sm:w-auto"
+          >
             Pin Location on Map
           </Button>
         </div>
@@ -139,7 +143,11 @@ export const ReportForm: React.FC = () => {
         />
         
         <div className="flex justify-end">
-          <Button type="submit" disabled={isSubmitting}>
+          <Button 
+            type="submit" 
+            disabled={isSubmitting}
+            className="w-full sm:w-auto"
+          >
             {isSubmitting ? 'Submitting...' : 'Submit Report'}
           </Button>
         </div>
