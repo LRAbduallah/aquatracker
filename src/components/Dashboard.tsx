@@ -16,7 +16,21 @@ export const Dashboard: React.FC = () => {
   const { data: algaeData, isLoading: isLoadingAlgae } = useAlgaeList();
   const { data: statsResponse, isLoading: isLoadingStats, error: statsError } = useStatistics();
   
-  const locations = locationsResponse?.data?.results?.features || [];
+  const locations = locationsResponse?.data?.results ? 
+    locationsResponse.data.results.map(loc => ({
+      id: loc.id,
+      type: "Feature" as const,
+      geometry: {
+        type: "Point" as const,
+        coordinates: loc.coordinates
+      },
+      properties: {
+        name: loc.name,
+        description: loc.description,
+        created_at: loc.created_at,
+        updated_at: loc.updated_at
+      }
+    })) : [];
   const algae = algaeData?.pages?.[0]?.data?.results || [];
   
   const latestAlgae = algae.slice(0, 5);

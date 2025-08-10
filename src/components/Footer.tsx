@@ -1,16 +1,30 @@
 import React from "react";
 
 const Footer: React.FC = () => (
-  <footer className="w-full bg-background border-t border-border py-4 mt-auto animate-fade-in">
-    <div className="container mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-      <span className="text-xs text-muted-foreground">© {new Date().getFullYear()} AquaTracker. All rights reserved.</span>
-      <nav className="flex gap-4">
-        <a href="https://github.com/" target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground hover:text-primary transition-colors duration-200">GitHub</a>
-        <a href="/privacy" className="text-xs text-muted-foreground hover:text-primary transition-colors duration-200">Privacy</a>
-        <a href="/terms" className="text-xs text-muted-foreground hover:text-primary transition-colors duration-200">Terms</a>
-      </nav>
+  <footer className="w-full bg-primary text-primary-foreground py-6 mt-auto">
+    <div className="container mx-auto px-4">
+      <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="text-center md:text-left">
+          <p className="text-sm font-medium">© 2024 Algae Research Data Archive</p>
+          <p className="text-xs opacity-90">Department of Botany, S.T. Hindu College</p>
+        </div>
+        
+        <div className="flex flex-col sm:flex-row gap-4 sm:gap-8">
+          <nav className="flex gap-4">
+            <a href="/" className="text-xs hover:text-accent transition-colors duration-200">Home</a>
+            <a href="/overview" className="text-xs hover:text-accent transition-colors duration-200">Overview</a>
+            <a href="/about" className="text-xs hover:text-accent transition-colors duration-200">About</a>
+            <a href="/algae" className="text-xs hover:text-accent transition-colors duration-200">Catalog</a>
+          </nav>
+          <nav className="flex gap-4">
+            <a href="/map" className="text-xs hover:text-accent transition-colors duration-200">Collection Map</a>
+            <a href="/dashboard" className="text-xs hover:text-accent transition-colors duration-200">Dashboard</a>
+            <a href="/locations" className="text-xs hover:text-accent transition-colors duration-200">Locations</a>
+          </nav>
+        </div>
+      </div>
     </div>
   </footer>
 );
 
-export default Footer; 
+export default Footer;

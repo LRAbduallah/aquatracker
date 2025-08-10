@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { BackendLocation } from '@/types/api';
+import { LocationFeature } from '@/types/api';
 import { useCreateLocation, useUpdateLocation } from '@/hooks/useLocations';
 import { toast } from 'sonner';
 
@@ -22,7 +22,7 @@ const locationSchema = z.object({
 type LocationFormData = z.infer<typeof locationSchema>;
 
 interface LocationFormProps {
-  initialData?: BackendLocation;
+  initialData?: LocationFeature;
   isEdit?: boolean;
 }
 
@@ -34,10 +34,10 @@ export default function LocationForm({ initialData, isEdit = false }: LocationFo
   const form = useForm<LocationFormData>({
     resolver: zodResolver(locationSchema),
     defaultValues: {
-      name: initialData?.name || "",
-      description: initialData?.description || "",
-      latitude: initialData?.coordinates?.[1] || 0,
-      longitude: initialData?.coordinates?.[0] || 0,
+      name: initialData?.properties?.name || "",
+      description: initialData?.properties?.description || "",
+      latitude: initialData?.geometry?.coordinates?.[1] || 0,
+      longitude: initialData?.geometry?.coordinates?.[0] || 0,
     },
   });
 
@@ -50,51 +50,43 @@ export default function LocationForm({ initialData, isEdit = false }: LocationFo
       };
 
       if (isEdit && initialData) {
-        try {
-          await updateLocation.mutateAsync({ 
-            id: initialData.id, 
-            data: locationInput 
-          });
-          toast.success("Location updated successfully!");
-          navigate("/locations");
-        } catch (error) {
-          console.error("Error updating location:", error);
-          throw error; // Re-throw to be caught by the outer catch
-        }
+        await updateLocation.mutateAsync({
+          id: initialData.id,
+          data: locationInput
+        });
+        toast.success("Location updated successfully!");
       } else {
-        try {
-          await createLocation.mutateAsync(locationInput);
-          toast.success("Location created successfully!");
-          navigate("/locations");
-        } catch (error) {
-          console.error("Error creating location:", error);
-          throw error; // Re-throw to be caught by the outer catch
-        }
+        await createLocation.mutateAsync(locationInput);
+        toast.success("Location created successfully!");
       }
+      
+      navigate('/locations');
     } catch (error) {
-      toast.error("Failed to save location. Please try again.");
-      console.error("Error in form submission:", error);
+      const errorMessage = isEdit ? "Failed to update location" : "Failed to create location";
+      toast.error(errorMessage);
+      console.error('Location form error:', error);
     }
   };
+
+  const isLoading = createLocation.isPending || updateLocation.isPending;
 
   return (
     <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8 max-w-2xl">
       <Card>
         <CardHeader>
-          <CardTitle className="text-xl sm:text-2xl font-bold">
-            {isEdit ? "Edit Location" : "Add New Location"}
+          <CardTitle className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-green-600 to-teal-500 bg-clip-text text-transparent">
+            {isEdit ? 'Edit Location' : 'Add New Location'}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6">
-              {/* Name */}
               <FormField
                 control={form.control}
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Name *</FormLabel>
+                    <FormLabel>Location Name</FormLabel>
                     <FormControl>
                       <Input placeholder="Enter location name" {...field} />
                     </FormControl>
@@ -103,7 +95,6 @@ export default function LocationForm({ initialData, isEdit = false }: LocationFo
                 )}
               />
 
-              {/* Description */}
               <FormField
                 control={form.control}
                 name="description"
@@ -111,26 +102,29 @@ export default function LocationForm({ initialData, isEdit = false }: LocationFo
                   <FormItem>
                     <FormLabel>Description</FormLabel>
                     <FormControl>
-                      <Textarea placeholder="Enter location description" rows={3} className="resize-none" {...field} />
+                      <Textarea 
+                        placeholder="Enter location description (optional)" 
+                        rows={3}
+                        {...field} 
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              {/* Coordinates */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
                   name="latitude"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Latitude *</FormLabel>
+                      <FormLabel>Latitude</FormLabel>
                       <FormControl>
                         <Input 
-                          type="number" 
+                          type="number"
                           step="any"
-                          placeholder="e.g., 40.7128" 
+                          placeholder="e.g., 37.7749"
                           {...field}
                           onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                         />
@@ -145,12 +139,12 @@ export default function LocationForm({ initialData, isEdit = false }: LocationFo
                   name="longitude"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Longitude *</FormLabel>
+                      <FormLabel>Longitude</FormLabel>
                       <FormControl>
                         <Input 
-                          type="number" 
+                          type="number"
                           step="any"
-                          placeholder="e.g., -74.0060" 
+                          placeholder="e.g., -122.4194"
                           {...field}
                           onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                         />
@@ -161,27 +155,21 @@ export default function LocationForm({ initialData, isEdit = false }: LocationFo
                 />
               </div>
 
-              {/* Form Actions */}
-              <div className="flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 pt-4 sm:pt-6">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => navigate("/locations")}
-                  disabled={form.formState.isSubmitting}
-                  className="w-full sm:w-auto"
+              <div className="flex flex-col sm:flex-row gap-3 pt-4">
+                <Button 
+                  type="submit" 
+                  disabled={isLoading}
+                  className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-teal-500 hover:to-teal-600 shadow-lg hover:shadow-xl transition-all duration-200 sm:flex-1"
+                >
+                  {isLoading ? 'Saving...' : isEdit ? 'Update Location' : 'Create Location'}
+                </Button>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => navigate('/locations')}
+                  className="sm:flex-1"
                 >
                   Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  disabled={form.formState.isSubmitting || createLocation.isPending || updateLocation.isPending}
-                  className="w-full sm:w-auto"
-                >
-                  {form.formState.isSubmitting || createLocation.isPending || updateLocation.isPending
-                    ? "Saving..."
-                    : isEdit
-                    ? "Update"
-                    : "Create"}
                 </Button>
               </div>
             </form>

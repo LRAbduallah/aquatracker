@@ -62,23 +62,19 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <Menu className="h-5 w-5" />
             </Button>
-            <div className="flex items-center gap-2 sm:gap-3">
+            <div className="flex items-center gap-3">
               <img 
-                src="/favicon.png" 
-                alt="AquaTrack" 
-                className="w-6 h-6 sm:w-8 sm:h-8 rounded"
+                src="/images/college-logo.png" 
+                alt="S.T. Hindu College Logo" 
+                className="h-8 w-auto"
                 onError={(e) => {
-                  // Fallback to droplets icon if favicon fails
-                  const fallback = document.createElement('div');
-                  fallback.className = 'w-6 h-6 sm:w-8 sm:h-8 bg-blue-500 rounded-lg flex items-center justify-center';
-                  fallback.innerHTML = '<svg class="h-5 w-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
-                  e.currentTarget.parentNode?.replaceChild(fallback, e.currentTarget);
+                  e.currentTarget.style.display = 'none';
                 }}
               />
-
-              <h1 className="text-sm sm:text-lg font-bold text-foreground hidden xs:block">
-                {title}
-              </h1>
+              <div className="flex flex-col">
+                <h1 className="text-lg font-bold text-primary leading-tight">AquaTracker</h1>
+                <p className="text-xs text-muted-foreground leading-tight">S.T. Hindu College</p>
+              </div>
             </div>
           </div>
 

@@ -7,7 +7,21 @@ import { Search } from 'lucide-react';
 export const MapView: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const { data: locationsResponse, isLoading, error } = useLocations();
-  const locations = locationsResponse?.data?.results?.features || [];
+  const locations = locationsResponse?.data?.results ? 
+    locationsResponse.data.results.map(loc => ({
+      id: loc.id,
+      type: "Feature" as const,
+      geometry: {
+        type: "Point" as const,
+        coordinates: loc.coordinates
+      },
+      properties: {
+        name: loc.name,
+        description: loc.description,
+        created_at: loc.created_at,
+        updated_at: loc.updated_at
+      }
+    })) : [];
 
   // Filter locations based on search query
   const filteredLocations = locations.filter(location =>
