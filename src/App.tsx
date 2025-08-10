@@ -6,6 +6,9 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import NotFound from "./pages/NotFound";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
+import HomePage from "./pages/HomePage";
+import OverviewPage from "./pages/OverviewPage";
+import AboutPage from "./pages/AboutPage";
 import { Dashboard } from "@/components/Dashboard";
 import { MapView } from "@/components/MapView";
 import { ReportForm } from "@/components/ReportForm";
@@ -41,13 +44,20 @@ const App = () => (
             </PublicRoute>
           } />
           
+          {/* Public Academic Pages */}
+          <Route element={<Layout />}>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/overview" element={<OverviewPage />} />
+            <Route path="/about" element={<AboutPage />} />
+          </Route>
+          
           {/* Protected Routes */}
           <Route element={
             <ProtectedRoute>
               <Layout />
             </ProtectedRoute>
           }>
-            <Route path="/" element={<Dashboard />} />
+            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/map" element={<MapView />} />
             <Route path="/report" element={<ReportForm />} />
             <Route path="/settings" element={<SettingsPage />} />

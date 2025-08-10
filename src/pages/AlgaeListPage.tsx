@@ -87,7 +87,21 @@ export default function AlgaeListPage() {
 
   // Locations extraction
   const { data: locationsData } = useLocations();
-  const locations = locationsData?.data?.results?.features || [];
+  const locations = locationsData?.data?.results ? 
+    locationsData.data.results.map(loc => ({
+      id: loc.id,
+      type: "Feature" as const,
+      geometry: {
+        type: "Point" as const,
+        coordinates: loc.coordinates
+      },
+      properties: {
+        name: loc.name,
+        description: loc.description,
+        created_at: loc.created_at,
+        updated_at: loc.updated_at
+      }
+    })) : [];
   
   const handleSortChange = (field: SortField) => {
     setSort(prev => ({
