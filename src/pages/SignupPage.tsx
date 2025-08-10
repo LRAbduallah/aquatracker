@@ -58,28 +58,28 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4 py-8">
-      <div className="w-full max-w-md space-y-8">
+    <div className="min-h-screen flex items-center justify-center bg-background px-2 sm:px-4 py-6 sm:py-8">
+      <div className="w-full max-w-md space-y-6 sm:space-y-8">
         {/* Logo/Brand */}
         <div className="text-center">
-          <div className="w-16 h-16 bg-primary rounded-lg flex items-center justify-center mx-auto mb-4">
-            <div className="w-8 h-8 bg-primary-foreground rounded"></div>
+          <div className="w-12 h-12 sm:w-16 sm:h-16 bg-primary rounded-lg flex items-center justify-center mx-auto mb-4">
+            <div className="w-6 h-6 sm:w-8 sm:h-8 bg-primary-foreground rounded"></div>
           </div>
-          <h1 className="text-2xl font-bold text-foreground">AquaTracker</h1>
-          <p className="text-muted-foreground">Environmental monitoring platform</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground">AquaTracker</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">Environmental monitoring platform</p>
         </div>
 
         {/* Signup Form */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-2xl text-center">Create Account</CardTitle>
-            <CardDescription className="text-center">
+            <CardTitle className="text-xl sm:text-2xl text-center">Create Account</CardTitle>
+            <CardDescription className="text-center text-sm sm:text-base">
               Join AquaTracker to start monitoring algae growth
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-3 sm:space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="first_name">First Name</Label>
                   <Input
@@ -167,7 +167,7 @@ export default function SignupPage() {
               </Button>
             </form>
             
-            <div className="mt-6 text-center text-sm">
+            <div className="mt-4 sm:mt-6 text-center text-sm">
               <span className="text-muted-foreground">Already have an account? </span>
               <Link 
                 to="/login" 

@@ -88,24 +88,40 @@ export const Dashboard: React.FC = () => {
           <h1 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-teal-500 bg-clip-text text-transparent">Dashboard</h1>
           <p className="text-muted-foreground mt-2">Overview of algae specimens and collection data</p>
         </div>
-        <div className="flex gap-2">
-          <Button onClick={() => navigate('/locations/new')} className="bg-gradient-to-r from-green-500 to-teal-500 text-white shadow-lg">
-            <MapPin className="h-4 w-4 mr-2" />
-            Add Location
+        <div className="flex flex-col sm:flex-row gap-2">
+          <Button 
+            onClick={() => navigate('/locations/new')} 
+            className="bg-gradient-to-r from-green-500 to-teal-500 text-white shadow-lg text-xs sm:text-sm"
+            size="sm"
+          >
+            <MapPin className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+            <span className="hidden sm:inline">Add Location</span>
+            <span className="sm:hidden">Location</span>
           </Button>
-          <Button onClick={() => navigate('/algae/new')} className="bg-gradient-to-r from-green-500 to-teal-500 text-white shadow-lg">
-            <Plus className="h-4 w-4 mr-2" />
-            Add Algae
+          <Button 
+            onClick={() => navigate('/algae/new')} 
+            className="bg-gradient-to-r from-green-500 to-teal-500 text-white shadow-lg text-xs sm:text-sm"
+            size="sm"
+          >
+            <Plus className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+            <span className="hidden sm:inline">Add Algae</span>
+            <span className="sm:hidden">Algae</span>
           </Button>
-          <Button variant="outline" onClick={() => navigate('/locations')}>
-            <MapPin className="h-4 w-4 mr-2" />
-            View Locations
+          <Button 
+            variant="outline" 
+            onClick={() => navigate('/locations')}
+            className="text-xs sm:text-sm"
+            size="sm"
+          >
+            <MapPin className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+            <span className="hidden sm:inline">View Locations</span>
+            <span className="sm:hidden">Locations</span>
           </Button>
         </div>
       </header>
       
       {/* Main Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4">
         {metrics.map((metric, index) => (
           <MetricCard
             key={index}
@@ -117,7 +133,7 @@ export const Dashboard: React.FC = () => {
         ))}
       </div>
       
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
         {/* Recent Algae Specimens */}
         <Card>
           <CardHeader>
@@ -129,24 +145,25 @@ export const Dashboard: React.FC = () => {
           <CardContent>
             <div className="space-y-3">
               {latestAlgae.map((algae) => (
-                <div key={algae.id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors">
-                  <div className="flex items-center gap-3">
+                <div key={algae.id} className="flex items-center justify-between p-2 sm:p-3 border rounded-lg hover:bg-muted/50 transition-colors">
+                  <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
                     {algae.image_url && (
                       <img 
                         src={algae.image_url} 
                         alt={algae.scientific_name}
-                        className="w-10 h-10 rounded object-cover"
+                        className="w-8 h-8 sm:w-10 sm:h-10 rounded object-cover flex-shrink-0"
                       />
                     )}
-                    <div>
-                      <h4 className="font-medium">{algae.scientific_name}</h4>
-                      <p className="text-sm text-muted-foreground">{algae.class_name}</p>
+                    <div className="min-w-0 flex-1">
+                      <h4 className="font-medium text-sm sm:text-base truncate">{algae.scientific_name}</h4>
+                      <p className="text-xs sm:text-sm text-muted-foreground truncate">{algae.class_name}</p>
                     </div>
                   </div>
                   <Button
-                    size="sm"
+                    size="sm" 
                     variant="ghost"
                     onClick={() => navigate(`/algae/${algae.id}`)}
+                    className="flex-shrink-0 text-xs sm:text-sm"
                   >
                     View
                   </Button>
@@ -184,10 +201,10 @@ export const Dashboard: React.FC = () => {
           <CardContent>
             <div className="space-y-3">
               {locations.slice(0, 5).map((location) => (
-                <div key={location.id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors">
-                  <div>
-                    <h4 className="font-medium">{location.properties.name}</h4>
-                    <p className="text-sm text-muted-foreground">
+                <div key={location.id} className="flex items-center justify-between p-2 sm:p-3 border rounded-lg hover:bg-muted/50 transition-colors">
+                  <div className="min-w-0 flex-1">
+                    <h4 className="font-medium text-sm sm:text-base truncate">{location.properties.name}</h4>
+                    <p className="text-xs sm:text-sm text-muted-foreground truncate">
                       {location.geometry.coordinates[1].toFixed(4)}, {location.geometry.coordinates[0].toFixed(4)}
                     </p>
                   </div>
@@ -195,6 +212,7 @@ export const Dashboard: React.FC = () => {
                     size="sm"
                     variant="ghost"
                     onClick={() => navigate(`/locations/${location.id}`)}
+                    className="flex-shrink-0 text-xs sm:text-sm"
                   >
                     View
                   </Button>
@@ -225,7 +243,7 @@ export const Dashboard: React.FC = () => {
       <div className="space-y-6">
         <section>
           <h2 className="text-2xl font-bold text-foreground mb-4">Growth Trends</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
             <SensorChart
               title="Algae Species Growth"
               value="+15%"
@@ -253,7 +271,7 @@ export const Dashboard: React.FC = () => {
         </div>
         
         {/* Statistics Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4">
           {statisticsMetrics.map((metric, index) => (
             <MetricCard
               key={`stats-${index}`}
@@ -288,20 +306,20 @@ export const Dashboard: React.FC = () => {
             ) : (
               <div className="space-y-3">
                 {recentCollections.map((collection) => (
-                  <div key={collection.id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-muted rounded flex items-center justify-center">
+                  <div key={collection.id} className="flex items-center justify-between p-2 sm:p-3 border rounded-lg hover:bg-muted/50 transition-colors">
+                    <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-muted rounded flex items-center justify-center flex-shrink-0">
                         <Leaf className="h-5 w-5 text-muted-foreground" />
                       </div>
-                      <div>
-                        <h4 className="font-medium">{collection.scientific_name}</h4>
-                        <p className="text-sm text-muted-foreground">
+                      <div className="min-w-0 flex-1">
+                        <h4 className="font-medium text-sm sm:text-base truncate">{collection.scientific_name}</h4>
+                        <p className="text-xs sm:text-sm text-muted-foreground truncate">
                           {collection.scientific_name} • Collected by {collection.collector}
                         </p>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-sm text-muted-foreground">
+                    <div className="text-right flex-shrink-0">
+                      <p className="text-xs sm:text-sm text-muted-foreground">
                         {new Date(collection.collection_date).toLocaleDateString()}
                       </p>
                     </div>

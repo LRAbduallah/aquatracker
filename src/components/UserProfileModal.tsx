@@ -124,11 +124,11 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ onLogout }) 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button className="w-10 h-10 bg-primary rounded-full cursor-pointer hover:opacity-80 transition-opacity flex items-center justify-center">
-          <User className="w-6 h-6 text-primary-foreground" />
+        <button className="w-8 h-8 sm:w-10 sm:h-10 bg-primary rounded-full cursor-pointer hover:opacity-80 transition-opacity flex items-center justify-center">
+          <User className="w-4 h-4 sm:w-5 sm:h-5 text-primary-foreground" />
         </button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] mx-2 sm:mx-0">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <User className="w-5 h-5" />
@@ -139,7 +139,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ onLogout }) 
           </DialogDescription>
         </DialogHeader>
         
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-3 sm:space-y-4">
           <div className="space-y-2">
             <Label htmlFor="first_name">First Name</Label>
             <Input
@@ -215,7 +215,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ onLogout }) 
             )}
           </div>
 
-          <div className="flex flex-col gap-2 pt-4">
+          <div className="flex flex-col gap-2 pt-3 sm:pt-4">
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting ? 'Updating...' : 'Update Profile'}
             </Button>

@@ -47,29 +47,32 @@ export default function AlgaeView({ algae }: AlgaeViewProps) {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl">
+    <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8 max-w-6xl">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4 min-w-0 flex-1">
           <Button
             variant="outline"
             size="sm"
             onClick={() => navigate("/algae")}
+            className="w-fit"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Catalog
+            <span className="hidden sm:inline">Back to Catalog</span>
+            <span className="sm:hidden">Back</span>
           </Button>
-          <div>
-            <h1 className="text-3xl font-bold">{algae.scientific_name}</h1>
+          <div className="min-w-0 flex-1">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold break-words">{algae.scientific_name}</h1>
             {algae.common_name && (
-              <p className="text-lg text-muted-foreground">{algae.common_name}</p>
+              <p className="text-sm sm:text-base lg:text-lg text-muted-foreground break-words">{algae.common_name}</p>
             )}
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
           <Button
             variant="outline"
             onClick={() => navigate(`/algae/${algae.id}/edit`)}
+            className="w-full sm:w-auto"
           >
             <Edit className="h-4 w-4 mr-2" />
             Edit
@@ -78,6 +81,7 @@ export default function AlgaeView({ algae }: AlgaeViewProps) {
             variant="destructive"
             onClick={() => setShowDeleteDialog(true)}
             disabled={deleteAlgae.isPending}
+            className="w-full sm:w-auto"
           >
             <Trash2 className="h-4 w-4 mr-2" />
             Delete
@@ -85,9 +89,9 @@ export default function AlgaeView({ algae }: AlgaeViewProps) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
         {/* Left Column - Image and Basic Info */}
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           {/* Image */}
           {algae.image_url && (
             <Card>
@@ -95,7 +99,7 @@ export default function AlgaeView({ algae }: AlgaeViewProps) {
                 <img
                   src={algae.image_url}
                   alt={algae.scientific_name}
-                  className="w-full h-96 object-cover rounded-t-lg"
+                  className="w-full h-48 sm:h-64 lg:h-96 object-cover rounded-t-lg"
                 />
               </CardContent>
             </Card>
@@ -109,27 +113,27 @@ export default function AlgaeView({ algae }: AlgaeViewProps) {
                 Taxonomic Classification
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+            <CardContent className="space-y-3 sm:space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
                   <Label className="text-sm font-medium text-muted-foreground">Class</Label>
-                  <p className="font-medium">{algae.class_name}</p>
+                  <p className="font-medium text-sm sm:text-base break-words">{algae.class_name}</p>
                 </div>
                 <div>
                   <Label className="text-sm font-medium text-muted-foreground">Order</Label>
-                  <p className="font-medium">{algae.order}</p>
+                  <p className="font-medium text-sm sm:text-base break-words">{algae.order}</p>
                 </div>
                 <div>
                   <Label className="text-sm font-medium text-muted-foreground">Family</Label>
-                  <p className="font-medium">{algae.family}</p>
+                  <p className="font-medium text-sm sm:text-base break-words">{algae.family}</p>
                 </div>
                 <div>
                   <Label className="text-sm font-medium text-muted-foreground">Genus</Label>
-                  <p className="font-medium">{algae.genus || "Not specified"}</p>
+                  <p className="font-medium text-sm sm:text-base break-words">{algae.genus || "Not specified"}</p>
                 </div>
-                <div>
+                <div className="sm:col-span-2">
                   <Label className="text-sm font-medium text-muted-foreground">Species</Label>
-                  <p className="font-medium">{algae.species || "Not specified"}</p>
+                  <p className="font-medium text-sm sm:text-base break-words">{algae.species || "Not specified"}</p>
                 </div>
               </div>
             </CardContent>
@@ -143,11 +147,11 @@ export default function AlgaeView({ algae }: AlgaeViewProps) {
                 Collection Details
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-3 sm:space-y-4">
               <div className="flex items-center gap-2">
                 <Calendar className="h-4 w-4 text-muted-foreground" />
                 <span className="text-sm text-muted-foreground">Collection Date:</span>
-                <span className="font-medium">
+                <span className="font-medium text-sm">
                   {new Date(algae.collection_date).toLocaleDateString()}
                 </span>
               </div>
@@ -155,7 +159,7 @@ export default function AlgaeView({ algae }: AlgaeViewProps) {
                 <div className="flex items-center gap-2">
                   <User className="h-4 w-4 text-muted-foreground" />
                   <span className="text-sm text-muted-foreground">Collector:</span>
-                  <span className="font-medium">{algae.collector}</span>
+                  <span className="font-medium text-sm break-words">{algae.collector}</span>
                 </div>
               )}
             </CardContent>
@@ -163,7 +167,7 @@ export default function AlgaeView({ algae }: AlgaeViewProps) {
         </div>
 
         {/* Right Column - Description and Map */}
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           {/* Description */}
           {algae.description && (
             <Card>
@@ -174,7 +178,7 @@ export default function AlgaeView({ algae }: AlgaeViewProps) {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm leading-relaxed">{algae.description}</p>
+                <p className="text-sm leading-relaxed break-words">{algae.description}</p>
               </CardContent>
             </Card>
           )}
@@ -187,20 +191,20 @@ export default function AlgaeView({ algae }: AlgaeViewProps) {
                 Collection Location
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-3 sm:space-y-4">
               <div className="space-y-4">
                 {algae.locations && algae.locations.length > 0 ? (
                   algae.locations.map((location) => (
-                    <div key={location.id} className="border rounded-lg p-4">
-                      <h4 className="font-medium mb-1">{location.properties.name}</h4>
+                    <div key={location.id} className="border rounded-lg p-3 sm:p-4">
+                      <h4 className="font-medium mb-1 text-sm sm:text-base break-words">{location.properties.name}</h4>
                       {location.properties.description && (
-                        <p className="text-sm text-muted-foreground mb-2">
+                        <p className="text-xs sm:text-sm text-muted-foreground mb-2 break-words">
                           {location.properties.description}
                         </p>
                       )}
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
                         <MapPin className="h-4 w-4 flex-shrink-0" />
-                        <span>
+                        <span className="break-all">
                           {`${location.geometry.coordinates[1].toFixed(4)}, ${location.geometry.coordinates[0].toFixed(4)}`}
                         </span>
                       </div>
@@ -212,12 +216,12 @@ export default function AlgaeView({ algae }: AlgaeViewProps) {
               </div>
               
               {/* Map */}
-              <div className="h-64 rounded-lg overflow-hidden">
+              <div className="h-48 sm:h-64 rounded-lg overflow-hidden">
                 {algae.locations && algae.locations.length > 0 ? (
                   <AlgaeLocationMap locations={algae.locations} />
                 ) : (
                   <div className="h-full flex items-center justify-center bg-gray-50 dark:bg-gray-800 text-muted-foreground">
-                    No location data available for map
+                    <span className="text-xs sm:text-sm text-center px-4">No location data available for map</span>
                   </div>
                 )}
               </div>
@@ -227,16 +231,16 @@ export default function AlgaeView({ algae }: AlgaeViewProps) {
           {/* Metadata */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Metadata</CardTitle>
+              <CardTitle className="text-base sm:text-lg">Metadata</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2 text-sm text-muted-foreground">
+            <CardContent className="space-y-2 text-xs sm:text-sm text-muted-foreground">
               <div className="flex justify-between">
                 <span>Created:</span>
-                <span>{new Date(algae.created_at).toLocaleString()}</span>
+                <span className="text-right break-all">{new Date(algae.created_at).toLocaleString()}</span>
               </div>
               <div className="flex justify-between">
                 <span>Last Updated:</span>
-                <span>{new Date(algae.updated_at).toLocaleString()}</span>
+                <span className="text-right break-all">{new Date(algae.updated_at).toLocaleString()}</span>
               </div>
             </CardContent>
           </Card>

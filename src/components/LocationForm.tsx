@@ -78,16 +78,16 @@ export default function LocationForm({ initialData, isEdit = false }: LocationFo
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-2xl">
+    <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8 max-w-2xl">
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl font-bold">
+          <CardTitle className="text-xl sm:text-2xl font-bold">
             {isEdit ? "Edit Location" : "Add New Location"}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6">
               {/* Name */}
               <FormField
                 control={form.control}
@@ -111,7 +111,7 @@ export default function LocationForm({ initialData, isEdit = false }: LocationFo
                   <FormItem>
                     <FormLabel>Description</FormLabel>
                     <FormControl>
-                      <Textarea placeholder="Enter location description" rows={3} {...field} />
+                      <Textarea placeholder="Enter location description" rows={3} className="resize-none" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -119,7 +119,7 @@ export default function LocationForm({ initialData, isEdit = false }: LocationFo
               />
 
               {/* Coordinates */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
                   name="latitude"
@@ -162,18 +162,20 @@ export default function LocationForm({ initialData, isEdit = false }: LocationFo
               </div>
 
               {/* Form Actions */}
-              <div className="flex justify-end gap-4 pt-6">
+              <div className="flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 pt-4 sm:pt-6">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => navigate("/locations")}
                   disabled={form.formState.isSubmitting}
+                  className="w-full sm:w-auto"
                 >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
                   disabled={form.formState.isSubmitting || createLocation.isPending || updateLocation.isPending}
+                  className="w-full sm:w-auto"
                 >
                   {form.formState.isSubmitting || createLocation.isPending || updateLocation.isPending
                     ? "Saving..."
