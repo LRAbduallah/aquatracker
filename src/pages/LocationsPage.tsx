@@ -9,6 +9,7 @@ import LocationsMap from '@/components/LocationsMap';
 import { BackendLocation } from '@/types/api';
 import { Plus, MapPin, Calendar, Trash2, Edit, Eye } from 'lucide-react';
 import { toast } from 'sonner';
+import { authService } from '@/lib/authService';
 
 export default function LocationsPage() {
   const navigate = useNavigate();
@@ -25,7 +26,8 @@ export default function LocationsPage() {
   }, []);
 
   const locations: BackendLocation[] = locationsResponse?.data?.results || [];
-
+  const isAuthenticated = authService.isAuthenticated();
+  
   console.log('Locations data:', locations); // Debug log
 
   const handleDeleteClick = (id: number) => {
@@ -61,13 +63,15 @@ export default function LocationsPage() {
           <h1 className="text-2xl sm:text-3xl font-bold">Locations</h1>
           <p className="text-sm sm:text-base text-muted-foreground">Manage collection locations</p>
         </div>
-        <Button 
-          onClick={() => navigate("/locations/new")}
-          className="w-full sm:w-auto"
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Add New Location
-        </Button>
+        {isAuthenticated && (
+          <Button 
+            onClick={() => navigate("/locations/new")}
+            className="w-full sm:w-auto"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Add New Location
+          </Button>
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
@@ -105,25 +109,27 @@ export default function LocationsPage() {
                       </div>
                     </div>
                   </div>
-                  <div className="flex flex-col sm:flex-row gap-1 ml-2 sm:ml-4 flex-shrink-0">
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => navigate(`/locations/${location.id}/edit`)}
-                      className="h-8 w-8 p-0"
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => handleDeleteClick(location.id)}
-                      disabled={deleteLocation.isPending}
-                      className="h-8 w-8 p-0"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
+                  {isAuthenticated && (
+                    <div className="flex flex-col sm:flex-row gap-1 ml-2 sm:ml-4 flex-shrink-0">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => navigate(`/locations/${location.id}/edit`)}
+                        className="h-8 w-8 p-0"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => handleDeleteClick(location.id)}
+                        disabled={deleteLocation.isPending}
+                        className="h-8 w-8 p-0"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -138,13 +144,15 @@ export default function LocationsPage() {
                 <p className="text-sm sm:text-base text-muted-foreground mb-4">
                   Get started by adding your first collection location.
                 </p>
-                <Button 
-                  onClick={() => navigate("/locations/new")}
-                  className="w-full sm:w-auto"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Location
-                </Button>
+                {isAuthenticated && (
+                  <Button 
+                    onClick={() => navigate("/locations/new")}
+                    className="w-full sm:w-auto"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Location
+                  </Button>
+                )}
               </CardContent>
             </Card>
           )}

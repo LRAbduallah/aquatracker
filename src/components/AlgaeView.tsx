@@ -23,6 +23,7 @@ import {
   FileText
 } from "lucide-react";
 import { Label } from "@/components/ui/label";
+import { authService } from "@/lib/authService";
 
 interface AlgaeViewProps {
   algae: Algae;
@@ -32,6 +33,7 @@ export default function AlgaeView({ algae }: AlgaeViewProps) {
   const navigate = useNavigate();
   const deleteAlgae = useDeleteAlgae();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const isAuthenticated = authService.isAuthenticated();
 
   const handleDelete = async () => {
     try {
@@ -68,25 +70,27 @@ export default function AlgaeView({ algae }: AlgaeViewProps) {
             )}
           </div>
         </div>
-        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-          <Button
-            variant="outline"
-            onClick={() => navigate(`/algae/${algae.id}/edit`)}
-            className="w-full sm:w-auto"
-          >
-            <Edit className="h-4 w-4 mr-2" />
-            Edit
-          </Button>
-          <Button
-            variant="destructive"
-            onClick={() => setShowDeleteDialog(true)}
-            disabled={deleteAlgae.isPending}
-            className="w-full sm:w-auto"
-          >
-            <Trash2 className="h-4 w-4 mr-2" />
-            Delete
-          </Button>
-        </div>
+        {isAuthenticated && (
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+            <Button
+              variant="outline"
+              onClick={() => navigate(`/algae/${algae.id}/edit`)}
+              className="w-full sm:w-auto"
+            >
+              <Edit className="h-4 w-4 mr-2" />
+              Edit
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => setShowDeleteDialog(true)}
+              disabled={deleteAlgae.isPending}
+              className="w-full sm:w-auto"
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              Delete
+            </Button>
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">

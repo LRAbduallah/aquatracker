@@ -28,11 +28,15 @@ api.interceptors.response.use(
   (error) => {
     // Handle common errors here
     if (error.response?.status === 401) {
-      // Handle unauthorized - redirect to login
-      if (window.location.pathname !== '/login' && window.location.pathname !== '/signup') {
-        localStorage.removeItem('token');
-        window.location.href = '/login';
+      const method = (error.config?.method || '').toLowerCase();
+      // Only redirect to login for non-GET requests (mutations)
+      if (method && method !== 'get') {
+        if (window.location.pathname !== '/login' && window.location.pathname !== '/signup') {
+          localStorage.removeItem('token');
+          window.location.href = '/login';
+        }
       }
+      // For GET requests, do not redirect; allow caller to handle 401
     }
     return Promise.reject(error);
   }

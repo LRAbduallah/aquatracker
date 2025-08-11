@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Menu, Search, X, Droplets, Waves, Fish, Activity } from 'lucide-react';
+import { Menu, Search, X, Droplets, Waves, Fish, Activity, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Link } from "react-router-dom";
@@ -25,6 +25,7 @@ export const Header: React.FC<HeaderProps> = ({
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const isAuthenticated = authService.isAuthenticated();
 
   const handleLogout = async () => {
     try {
@@ -118,7 +119,16 @@ export const Header: React.FC<HeaderProps> = ({
               </div>
             )}
             {showProfile && (
-              <UserProfileModal onLogout={handleLogout} />
+              isAuthenticated ? (
+                <UserProfileModal onLogout={handleLogout} />
+              ) : (
+                <Link to="/login" aria-label="Login">
+                  <Button variant="outline" size="sm" className="flex items-center gap-2">
+                    <User className="h-4 w-4" />
+                    <span className="hidden sm:inline">Login</span>
+                  </Button>
+                </Link>
+              )
             )}
           </div>
         </div>
@@ -142,7 +152,7 @@ export const Header: React.FC<HeaderProps> = ({
                 </div>
               )}
               <Link 
-                to="/" 
+                to="/dashboard" 
                 className="block px-3 py-3 text-base font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-colors"
                 onClick={() => setMobileMenuOpen(false)}
               >

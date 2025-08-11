@@ -17,15 +17,20 @@ export default function AlgaeViewPage() {
     );
   }
 
-  if (error || !algae) {
+  if (error) {
+    // Allow public viewing; show friendly message if backend restricts access
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-destructive mb-2">Error</h2>
-          <p className="text-muted-foreground">Failed to load algae specimen.</p>
+          <h2 className="text-2xl font-bold text-destructive mb-2">Unable to load specimen</h2>
+          <p className="text-muted-foreground">This data may require login or is temporarily unavailable.</p>
         </div>
       </div>
     );
+  }
+
+  if (!algae) {
+    return null;
   }
 
   return <AlgaeView algae={algae} />;

@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useLocations } from '@/hooks/useLocations';
 import { FilterBar } from '@/components/FilterBar';
-import { useInView } from 'framer-motion';
-import { useRef } from 'react';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { useAlgaeList, useDeleteAlgae } from '@/hooks/useAlgae';
+import { useAlgaeAll, useDeleteAlgae } from '@/hooks/useAlgae';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import { Algae } from '@/types/api';
 import { useNavigate } from 'react-router-dom';
@@ -26,6 +23,7 @@ import {
   Info
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { authService } from '@/lib/authService';
 
 type SortField = 'scientific_name' | 'common_name' | 'class_name' | 'collection_date';
 type SortOrder = 'asc' | 'desc';
@@ -47,43 +45,46 @@ export default function AlgaeListPage() {
     isOpen: false,
     algaeId: null,
   });
+  const isAuthenticated = authService.isAuthenticated();
 
-  const { data, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage } = 
-    useAlgaeList({
-      ...filters
-    });
+const { data: allAlgaeData, isLoading } = 
+    useAlgaeAll();
 
   const deleteAlgae = useDeleteAlgae();
 
-  const loadMoreRef = useRef(null);
-  const isInView = useInView(loadMoreRef);
+// Client-side fetch once; no infinite scroll
 
-  useEffect(() => {
-    if (isInView && hasNextPage && !isFetchingNextPage) {
-      fetchNextPage();
-    }
-  }, [isInView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  const allAlgae = data?.pages.flatMap(page => page.data.results) ?? [];
+const allAlgae = (allAlgaeData as Algae[] | undefined) ?? [];
 
-  const sortedAlgae = [...allAlgae].sort((a, b) => {
-    const aValue = a[sort.field];
-    const bValue = b[sort.field];
-    return sort.order === 'asc' 
-      ? aValue.localeCompare(bValue)
-      : bValue.localeCompare(aValue);
-  });
+const filteredAlgae = allAlgae.filter((a: Algae) => {
+  const matchesClass = !filters.class_name || (a.class_name?.toLowerCase() === filters.class_name.toLowerCase());
+  const matchesOrder = !filters.order || (a.order?.toLowerCase() === filters.order.toLowerCase());
+  const matchesFamily = !filters.family || (a.family?.toLowerCase() === filters.family.toLowerCase());
+  const matchesSearch = !filters.search || [a.scientific_name, a.common_name, a.family, a.class_name]
+    .some(v => v?.toLowerCase().includes(filters.search.toLowerCase()));
+  const matchesLocation = !filters.location || ((a as any).location === filters.location || (a as any).location_id === filters.location);
+  return matchesClass && matchesOrder && matchesFamily && matchesSearch && matchesLocation;
+});
+
+const sortedAlgae = [...filteredAlgae].sort((a, b) => {
+  const aValue = String((a as any)[sort.field] ?? '');
+  const bValue = String((b as any)[sort.field] ?? '');
+  return sort.order === 'asc' 
+    ? aValue.localeCompare(bValue)
+    : bValue.localeCompare(aValue);
+});
 
   const handleFilterChange = (key: keyof typeof filters, value: string | number) => {
     setFilters(prev => ({ ...prev, [key]: value }));
   };
 
   // Taxonomy options extraction
-  const taxonomyOptions = {
-    classes: Array.from(new Set(allAlgae.map(a => a.class_name).filter(Boolean))),
-    orders: Array.from(new Set(allAlgae.map(a => a.order).filter(Boolean))),
-    families: Array.from(new Set(allAlgae.map(a => a.family).filter(Boolean))),
-  };
+const taxonomyOptions = {
+  classes: Array.from(new Set(allAlgae.map(a => a.class_name).filter((v): v is string => Boolean(v)))),
+  orders: Array.from(new Set(allAlgae.map(a => a.order).filter((v): v is string => Boolean(v)))),
+  families: Array.from(new Set(allAlgae.map(a => a.family).filter((v): v is string => Boolean(v)))),
+};
 
   // Locations extraction
   const { data: locationsData } = useLocations();
@@ -127,7 +128,7 @@ export default function AlgaeListPage() {
     }
   };
 
-  return (
+return (
     <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8 min-h-screen">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-4">
@@ -137,15 +138,17 @@ export default function AlgaeListPage() {
           </h1>
           <p className="text-muted-foreground text-sm sm:text-base lg:text-lg">Discover and manage algae specimens</p>
         </div>
-        <Button 
-          onClick={() => navigate('/algae/new')}
-          className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-teal-500 hover:to-teal-600 shadow-lg hover:shadow-xl transition-all duration-200 w-full sm:w-auto"
-          size="default"
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          <span className="sm:hidden">Add Specimen</span>
-          <span className="hidden sm:inline">Add New Specimen</span>
-        </Button>
+        {isAuthenticated && (
+          <Button 
+            onClick={() => navigate('/algae/new')}
+            className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-teal-500 hover:to-teal-600 shadow-lg hover:shadow-xl transition-all duration-200 w-full sm:w-auto"
+            size="default"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            <span className="sm:hidden">Add Specimen</span>
+            <span className="hidden sm:inline">Add New Specimen</span>
+          </Button>
+        )}
       </div>
 
       {/* Filters */}
@@ -192,7 +195,7 @@ export default function AlgaeListPage() {
         </div>
       </div>
 
-      {/* Loading State */}
+{/* Loading State */}
       {isLoading && (
         <div className="flex items-center justify-center py-20">
           <div className="flex flex-col items-center gap-4">
@@ -226,25 +229,27 @@ export default function AlgaeListPage() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 
                 {/* Action buttons overlay */}
-                <div className="absolute top-2 right-2 sm:top-3 sm:right-3 flex gap-1 opacity-0 group-hover:opacity-100 transition-all duration-200">
-                  <Button
-                    size="sm"
-                    variant="secondary"
-                    className="h-6 w-6 sm:h-8 sm:w-8 p-0 bg-gray-800/90 hover:bg-gray-700 border-gray-600 text-gray-300 shadow-lg"
-                    onClick={() => navigate(`/algae/${algae.id}/edit`)}
-                  >
-                    <Edit className="h-3 w-3 sm:h-4 sm:w-4" />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="secondary"
-                    className="h-6 w-6 sm:h-8 sm:w-8 p-0 bg-gray-800/90 hover:bg-red-900/80 text-red-400 border-gray-600 shadow-lg"
-                    onClick={() => handleDeleteClick(algae.id)}
-                    disabled={deleteAlgae.isPending}
-                  >
-                    <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
-                  </Button>
-                </div>
+                {isAuthenticated && (
+                  <div className="absolute top-2 right-2 sm:top-3 sm:right-3 flex gap-1 opacity-0 group-hover:opacity-100 transition-all duration-200">
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      className="h-6 w-6 sm:h-8 sm:w-8 p-0 bg-gray-800/90 hover:bg-gray-700 border-gray-600 text-gray-300 shadow-lg"
+                      onClick={() => navigate(`/algae/${algae.id}/edit`)}
+                    >
+                      <Edit className="h-3 w-3 sm:h-4 sm:w-4" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      className="h-6 w-6 sm:h-8 sm:w-8 p-0 bg-gray-800/90 hover:bg-red-900/80 text-red-400 border-gray-600 shadow-lg"
+                      onClick={() => handleDeleteClick(algae.id)}
+                      disabled={deleteAlgae.isPending}
+                    >
+                      <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
+                    </Button>
+                  </div>
+                )}
 
                 {/* Class badge */}
                 <div className="absolute bottom-2 left-2 sm:bottom-3 sm:left-3">
@@ -297,27 +302,6 @@ export default function AlgaeListPage() {
         ))}
       </div>
 
-      {/* Loading More Trigger */}
-      <div
-        ref={loadMoreRef}
-        className="h-16 sm:h-20 flex items-center justify-center mt-8 sm:mt-12"
-      >
-        {isFetchingNextPage ? (
-          <div className="flex flex-col items-center gap-3">
-            <div className="animate-spin rounded-full h-8 w-8 border-4 border-green-200 border-t-green-500" />
-            <p className="text-muted-foreground">Loading more specimens...</p>
-          </div>
-        ) : hasNextPage ? (
-          <p className="text-muted-foreground">Scroll to load more...</p>
-        ) : sortedAlgae.length > 0 ? (
-          <div className="text-center">
-            <p className="text-muted-foreground mb-2">You've reached the end!</p>
-            <p className="text-xs sm:text-sm text-gray-500">
-              Showing {sortedAlgae.length} specimen{sortedAlgae.length !== 1 ? 's' : ''}
-            </p>
-          </div>
-        ) : null}
-      </div>
 
       <ConfirmationDialog
         isOpen={deleteDialogState.isOpen}

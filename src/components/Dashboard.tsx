@@ -9,12 +9,14 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useNavigate } from 'react-router-dom';
 import { Leaf, MapPin, Calendar, TrendingUp, Plus, Users, BarChart3, Database, Building2 } from 'lucide-react';
+import { authService } from '@/lib/authService';
 
 export const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const { data: locationsResponse, isLoading: isLoadingLocations } = useLocations();
   const { data: algaeData, isLoading: isLoadingAlgae } = useAlgaeList();
   const { data: statsResponse, isLoading: isLoadingStats, error: statsError } = useStatistics();
+  const isAuthenticated = authService.isAuthenticated();
   
   const locations = locationsResponse?.data?.results ? 
     locationsResponse.data.results.map(loc => ({
@@ -103,24 +105,28 @@ export const Dashboard: React.FC = () => {
           <p className="text-muted-foreground mt-2">Overview of algae specimens and collection data</p>
         </div>
         <div className="flex flex-col sm:flex-row gap-2">
-          <Button 
-            onClick={() => navigate('/locations/new')} 
-            className="bg-gradient-to-r from-green-500 to-teal-500 text-white shadow-lg text-xs sm:text-sm"
-            size="sm"
-          >
-            <MapPin className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-            <span className="hidden sm:inline">Add Location</span>
-            <span className="sm:hidden">Location</span>
-          </Button>
-          <Button 
-            onClick={() => navigate('/algae/new')} 
-            className="bg-gradient-to-r from-green-500 to-teal-500 text-white shadow-lg text-xs sm:text-sm"
-            size="sm"
-          >
-            <Plus className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-            <span className="hidden sm:inline">Add Algae</span>
-            <span className="sm:hidden">Algae</span>
-          </Button>
+          {isAuthenticated && (
+            <>
+              <Button 
+                onClick={() => navigate('/locations/new')} 
+                className="bg-gradient-to-r from-green-500 to-teal-500 text-white shadow-lg text-xs sm:text-sm"
+                size="sm"
+              >
+                <MapPin className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">Add Location</span>
+                <span className="sm:hidden">Location</span>
+              </Button>
+              <Button 
+                onClick={() => navigate('/algae/new')} 
+                className="bg-gradient-to-r from-green-500 to-teal-500 text-white shadow-lg text-xs sm:text-sm"
+                size="sm"
+              >
+                <Plus className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">Add Algae</span>
+                <span className="sm:hidden">Algae</span>
+              </Button>
+            </>
+          )}
           <Button 
             variant="outline" 
             onClick={() => navigate('/locations')}
