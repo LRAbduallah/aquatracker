@@ -26,6 +26,7 @@ import {
   Info
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { authService } from '@/lib/authService';
 
 type SortField = 'scientific_name' | 'common_name' | 'class_name' | 'collection_date';
 type SortOrder = 'asc' | 'desc';
@@ -47,6 +48,7 @@ export default function AlgaeListPage() {
     isOpen: false,
     algaeId: null,
   });
+  const isAuthenticated = authService.isAuthenticated();
 
   const { data, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage } = 
     useAlgaeList({
@@ -137,15 +139,17 @@ export default function AlgaeListPage() {
           </h1>
           <p className="text-muted-foreground text-sm sm:text-base lg:text-lg">Discover and manage algae specimens</p>
         </div>
-        <Button 
-          onClick={() => navigate('/algae/new')}
-          className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-teal-500 hover:to-teal-600 shadow-lg hover:shadow-xl transition-all duration-200 w-full sm:w-auto"
-          size="default"
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          <span className="sm:hidden">Add Specimen</span>
-          <span className="hidden sm:inline">Add New Specimen</span>
-        </Button>
+        {isAuthenticated && (
+          <Button 
+            onClick={() => navigate('/algae/new')}
+            className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-teal-500 hover:to-teal-600 shadow-lg hover:shadow-xl transition-all duration-200 w-full sm:w-auto"
+            size="default"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            <span className="sm:hidden">Add Specimen</span>
+            <span className="hidden sm:inline">Add New Specimen</span>
+          </Button>
+        )}
       </div>
 
       {/* Filters */}
@@ -226,25 +230,27 @@ export default function AlgaeListPage() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 
                 {/* Action buttons overlay */}
-                <div className="absolute top-2 right-2 sm:top-3 sm:right-3 flex gap-1 opacity-0 group-hover:opacity-100 transition-all duration-200">
-                  <Button
-                    size="sm"
-                    variant="secondary"
-                    className="h-6 w-6 sm:h-8 sm:w-8 p-0 bg-gray-800/90 hover:bg-gray-700 border-gray-600 text-gray-300 shadow-lg"
-                    onClick={() => navigate(`/algae/${algae.id}/edit`)}
-                  >
-                    <Edit className="h-3 w-3 sm:h-4 sm:w-4" />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="secondary"
-                    className="h-6 w-6 sm:h-8 sm:w-8 p-0 bg-gray-800/90 hover:bg-red-900/80 text-red-400 border-gray-600 shadow-lg"
-                    onClick={() => handleDeleteClick(algae.id)}
-                    disabled={deleteAlgae.isPending}
-                  >
-                    <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
-                  </Button>
-                </div>
+                {isAuthenticated && (
+                  <div className="absolute top-2 right-2 sm:top-3 sm:right-3 flex gap-1 opacity-0 group-hover:opacity-100 transition-all duration-200">
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      className="h-6 w-6 sm:h-8 sm:w-8 p-0 bg-gray-800/90 hover:bg-gray-700 border-gray-600 text-gray-300 shadow-lg"
+                      onClick={() => navigate(`/algae/${algae.id}/edit`)}
+                    >
+                      <Edit className="h-3 w-3 sm:h-4 sm:w-4" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      className="h-6 w-6 sm:h-8 sm:w-8 p-0 bg-gray-800/90 hover:bg-red-900/80 text-red-400 border-gray-600 shadow-lg"
+                      onClick={() => handleDeleteClick(algae.id)}
+                      disabled={deleteAlgae.isPending}
+                    >
+                      <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
+                    </Button>
+                  </div>
+                )}
 
                 {/* Class badge */}
                 <div className="absolute bottom-2 left-2 sm:bottom-3 sm:left-3">

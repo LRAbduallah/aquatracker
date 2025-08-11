@@ -50,6 +50,12 @@ const App = () => (
             <Route path="/" element={<HomePage />} />
             <Route path="/overview" element={<OverviewPage />} />
             <Route path="/about" element={<AboutPage />} />
+            {/* Public viewing routes (GET-only content) */}
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/map" element={<MapView />} />
+            <Route path="/algae" element={<AlgaeListPage />} />
+            <Route path="/algae/:id" element={<AlgaeViewPage />} />
+            <Route path="/locations" element={<LocationsPage />} />
           </Route>
           
           {/* Protected Routes */}
@@ -58,15 +64,10 @@ const App = () => (
               <Layout />
             </ProtectedRoute>
           }>
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/map" element={<MapView />} />
             <Route path="/report" element={<ReportForm />} />
             <Route path="/settings" element={<SettingsPage />} />
-            <Route path="/algae" element={<AlgaeListPage />} />
             <Route path="/algae/new" element={<AlgaeFormPage />} />
-            <Route path="/algae/:id" element={<AlgaeViewPage />} />
             <Route path="/algae/:id/edit" element={<AlgaeFormPage />} />
-            <Route path="/locations" element={<LocationsPage />} />
             <Route path="/locations/new" element={<LocationFormPage />} />
             <Route path="/locations/:id/edit" element={<LocationFormPage />} />
           </Route>
