@@ -29,6 +29,44 @@ export const useAlgaeList = (params?: {
   });
 };
 
+export const useAlgaeAll = (params?: {
+  class_name?: string;
+  order?: string;
+  family?: string;
+  location?: number;
+  search?: string;
+}) => {
+  return useQuery({
+    queryKey: ['algae-all'],
+    queryFn: async () => {
+      // Fetch all pages sequentially and cache them client-side
+      const all: Algae[] = [];
+      let page = 1;
+      // Safety cap to avoid infinite loops
+      const MAX_PAGES = 500;
+      for (let i = 0; i < MAX_PAGES; i++) {
+        const res = await algaeService.getAll({ ...params, page });
+        all.push(...res.data.results);
+        if (res.data.next) {
+          const nextUrl = new URL(res.data.next);
+          const nextPage = nextUrl.searchParams.get('page');
+          if (nextPage) {
+            page = parseInt(nextPage);
+          } else {
+            page += 1;
+          }
+        } else {
+          break;
+        }
+      }
+      return all;
+    },
+    // Cache settings: fresh for 10 minutes, garbage collected after 30 minutes
+    staleTime: 10 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+  });
+};
+
 export const useAlgae = (id: number) => {
   return useQuery({
     queryKey: ['algae', id],

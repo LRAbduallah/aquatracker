@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useLocations } from '@/hooks/useLocations';
 import { FilterBar } from '@/components/FilterBar';
-import { useInView } from 'framer-motion';
-import { useRef } from 'react';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { useAlgaeList, useDeleteAlgae } from '@/hooks/useAlgae';
+import { useAlgaeAll, useDeleteAlgae } from '@/hooks/useAlgae';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import { Algae } from '@/types/api';
 import { useNavigate } from 'react-router-dom';
@@ -50,42 +47,44 @@ export default function AlgaeListPage() {
   });
   const isAuthenticated = authService.isAuthenticated();
 
-  const { data, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage } = 
-    useAlgaeList({
-      ...filters
-    });
+const { data: allAlgaeData, isLoading } = 
+    useAlgaeAll();
 
   const deleteAlgae = useDeleteAlgae();
 
-  const loadMoreRef = useRef(null);
-  const isInView = useInView(loadMoreRef);
+// Client-side fetch once; no infinite scroll
 
-  useEffect(() => {
-    if (isInView && hasNextPage && !isFetchingNextPage) {
-      fetchNextPage();
-    }
-  }, [isInView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  const allAlgae = data?.pages.flatMap(page => page.data.results) ?? [];
+const allAlgae = (allAlgaeData as Algae[] | undefined) ?? [];
 
-  const sortedAlgae = [...allAlgae].sort((a, b) => {
-    const aValue = a[sort.field];
-    const bValue = b[sort.field];
-    return sort.order === 'asc' 
-      ? aValue.localeCompare(bValue)
-      : bValue.localeCompare(aValue);
-  });
+const filteredAlgae = allAlgae.filter((a: Algae) => {
+  const matchesClass = !filters.class_name || (a.class_name?.toLowerCase() === filters.class_name.toLowerCase());
+  const matchesOrder = !filters.order || (a.order?.toLowerCase() === filters.order.toLowerCase());
+  const matchesFamily = !filters.family || (a.family?.toLowerCase() === filters.family.toLowerCase());
+  const matchesSearch = !filters.search || [a.scientific_name, a.common_name, a.family, a.class_name]
+    .some(v => v?.toLowerCase().includes(filters.search.toLowerCase()));
+  const matchesLocation = !filters.location || ((a as any).location === filters.location || (a as any).location_id === filters.location);
+  return matchesClass && matchesOrder && matchesFamily && matchesSearch && matchesLocation;
+});
+
+const sortedAlgae = [...filteredAlgae].sort((a, b) => {
+  const aValue = String((a as any)[sort.field] ?? '');
+  const bValue = String((b as any)[sort.field] ?? '');
+  return sort.order === 'asc' 
+    ? aValue.localeCompare(bValue)
+    : bValue.localeCompare(aValue);
+});
 
   const handleFilterChange = (key: keyof typeof filters, value: string | number) => {
     setFilters(prev => ({ ...prev, [key]: value }));
   };
 
   // Taxonomy options extraction
-  const taxonomyOptions = {
-    classes: Array.from(new Set(allAlgae.map(a => a.class_name).filter(Boolean))),
-    orders: Array.from(new Set(allAlgae.map(a => a.order).filter(Boolean))),
-    families: Array.from(new Set(allAlgae.map(a => a.family).filter(Boolean))),
-  };
+const taxonomyOptions = {
+  classes: Array.from(new Set(allAlgae.map(a => a.class_name).filter((v): v is string => Boolean(v)))),
+  orders: Array.from(new Set(allAlgae.map(a => a.order).filter((v): v is string => Boolean(v)))),
+  families: Array.from(new Set(allAlgae.map(a => a.family).filter((v): v is string => Boolean(v)))),
+};
 
   // Locations extraction
   const { data: locationsData } = useLocations();
@@ -129,7 +128,7 @@ export default function AlgaeListPage() {
     }
   };
 
-  return (
+return (
     <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8 min-h-screen">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-4">
@@ -196,7 +195,7 @@ export default function AlgaeListPage() {
         </div>
       </div>
 
-      {/* Loading State */}
+{/* Loading State */}
       {isLoading && (
         <div className="flex items-center justify-center py-20">
           <div className="flex flex-col items-center gap-4">
@@ -303,27 +302,6 @@ export default function AlgaeListPage() {
         ))}
       </div>
 
-      {/* Loading More Trigger */}
-      <div
-        ref={loadMoreRef}
-        className="h-16 sm:h-20 flex items-center justify-center mt-8 sm:mt-12"
-      >
-        {isFetchingNextPage ? (
-          <div className="flex flex-col items-center gap-3">
-            <div className="animate-spin rounded-full h-8 w-8 border-4 border-green-200 border-t-green-500" />
-            <p className="text-muted-foreground">Loading more specimens...</p>
-          </div>
-        ) : hasNextPage ? (
-          <p className="text-muted-foreground">Scroll to load more...</p>
-        ) : sortedAlgae.length > 0 ? (
-          <div className="text-center">
-            <p className="text-muted-foreground mb-2">You've reached the end!</p>
-            <p className="text-xs sm:text-sm text-gray-500">
-              Showing {sortedAlgae.length} specimen{sortedAlgae.length !== 1 ? 's' : ''}
-            </p>
-          </div>
-        ) : null}
-      </div>
 
       <ConfirmationDialog
         isOpen={deleteDialogState.isOpen}
